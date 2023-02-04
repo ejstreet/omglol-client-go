@@ -1,14 +1,13 @@
 package omglol
 
 import (
-	//"fmt"
 	"os"
 	"testing"
 )
 
 var testEmail = os.Getenv("OMGLOL_USER_EMAIL")
 var testKey   = os.Getenv("OMGLOL_API_KEY")
-var testName  = os.Getenv("OMG_LOL_USERNAME")
+var testName  = os.Getenv("OMGLOL_USERNAME")
 
 
 func TestGetAccountInfo(t *testing.T) {
@@ -78,11 +77,11 @@ func TestGetActiveSessions(t *testing.T) {
 
 	a, err := c.GetActiveSessions()
 
+	t.Logf("%+v\n", a)
+
 	if !a.Request.Success {
 		t.Errorf(err.Error())
 	}
-
-	t.Logf("%+v\n", a)
 }
 
 // This test cannot currently be run automatically
@@ -100,8 +99,6 @@ func TestGetActiveSessions(t *testing.T) {
 // 	if !a.Request.Success {
 // 		t.Errorf(err.Error())
 // 	}
-
-// 	t.Logf("%+v\n", a)
 // }
 
 func TestGetAccountSettings(t *testing.T) {
