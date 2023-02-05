@@ -86,6 +86,8 @@ type ActiveSessions struct {
 type Address struct {
 	Address      string       `json:"address"`
 	Message      string       `json:"message,omitempty"`
+	Punycode	 string		  `json:"punycode,omitempty"`
+	SeeAlso      string 	  `json:"see-also,omitempty"`
 	Registration Registration `json:"registration"`
 	Expiration   Expiration   `json:"expiration"`
 	Owner        string       `json:"owner,omitempty"`
@@ -93,6 +95,37 @@ type Address struct {
 
 type Addresses struct {
 	Addresses []Address `json:"response"`
+}
+
+type AddressExpiration struct {
+	Message  string `json:"message,omitempty"`
+	Expired  bool   `json:"expired,omitempty"`
+}
+
+type AddressInfo struct {
+    Address       string `json:"address"`
+    Message       string `json:"message"`
+    Registration  struct {
+        Message         string `json:"message"`
+        UnixEpochTime   string `json:"unix_epoch_time"`
+        Iso8601Time     string `json:"iso_8601_time"`
+        Rfc2822Time     string `json:"rfc_2822_time"`
+        RelativeTime    string `json:"relative_time"`
+    } `json:"registration"`
+    Expiration struct {
+        Message         string `json:"message"`
+        Expired         bool `json:"expired"`
+        WillExpire      bool `json:"will_expire"`
+        UnixEpochTime   string `json:"unix_epoch_time"`
+        Iso8601Time     string `json:"iso_8601_time"`
+        Rfc2822Time     string `json:"rfc_2822_time"`
+        RelativeTime    string `json:"relative_time"`
+    } `json:"expiration"`
+    Verification struct {
+        Message string `json:"message"`
+        Verified bool `json:"verified"`
+    } `json:"verification"`
+    Owner string `json:"owner"`
 }
 
 type DNSRecord struct {
