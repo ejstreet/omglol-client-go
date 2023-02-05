@@ -2,6 +2,7 @@ package omglol
 
 import (
 	"testing"
+	"fmt"
 )
 
 func TestGetAddressAvailability(t *testing.T) {
@@ -12,6 +13,9 @@ func TestGetAddressAvailability(t *testing.T) {
 	}
 
 	a, err := c.GetAddressAvailability("test")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	t.Logf("%+v\n", *a)
 
@@ -28,6 +32,9 @@ func TestGetAddressExpiration(t *testing.T) {
 	}
 
 	a, err := c.GetAddressExpiration("test")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	t.Logf("%+v\n", *a)
 
@@ -43,9 +50,12 @@ func TestGetAddressInfo(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	i, err := c.GetAddressInfo("test")
+	i, err := c.GetAddressInfo("terraform")
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
-	t.Logf("%+v\n", *i)
+	fmt.Printf("%+v\n", *i)
 
 	if i.Message == "" {
 		t.Errorf(err.Error())

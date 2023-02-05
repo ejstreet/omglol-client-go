@@ -12,6 +12,9 @@ func TestGetAccountInfo(t *testing.T) {
 	}
 
 	a, err := c.GetAccountInfo()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	if a.Message != "Here is the account info that you requested." {
 		t.Errorf(err.Error())
@@ -26,6 +29,9 @@ func TestGetAddresses(t *testing.T) {
 	}
 
 	a, err := c.GetAccountAddresses()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	t.Logf("%+v\n", *a)
 }
@@ -38,6 +44,9 @@ func TestSetAccountName(t *testing.T) {
 	}
 
 	a, err := c.SetAccountName(testName)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	t.Logf("%+v\n", a)
 
@@ -54,6 +63,9 @@ func TestGetAccountName(t *testing.T) {
 	}
 
 	a, err := c.GetAccountName()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	t.Logf("%+v\n", a)
 
@@ -70,6 +82,9 @@ func TestGetActiveSessions(t *testing.T) {
 	}
 
 	a, err := c.GetActiveSessions()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	t.Logf("%+v\n", a)
 
@@ -87,6 +102,9 @@ func TestGetActiveSessions(t *testing.T) {
 // 	}
 
 // 	a, err := c.DeleteActiveSession("1be17d138f202b0fba996192f22cc249")
+//  if err != nil {
+// 	  t.Errorf(err.Error())
+//  }
 
 // 	t.Logf("%+v\n", a)
 
@@ -103,6 +121,9 @@ func TestGetAccountSettings(t *testing.T) {
 	}
 
 	a, err := c.GetAccountSettings()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	if a.Settings.Owner == "" {
 		t.Errorf(err.Error())
@@ -117,6 +138,9 @@ func TestSetAccountSettings(t *testing.T) {
 	}
 
 	a, err := c.SetAccountSettings(map[string]string{"communication": "email_ok"})
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
 	t.Logf("%+v\n", a)
 
