@@ -1,9 +1,8 @@
-package omglol
+package client
 
 import (
 	"fmt"
 	"io/ioutil"
-	//"encoding/json"
 	"net/http"
 	"time"
 )

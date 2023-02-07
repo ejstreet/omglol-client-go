@@ -1,8 +1,7 @@
-package omglol
+package client
 
 import (
 	"encoding/json"
-	"time"
 )
 
 type Response struct {
@@ -129,14 +128,14 @@ type AddressInfo struct {
 }
 
 type DNSRecord struct {
-	ID        string      `json:"id"`
-	Type      string      `json:"type"`
-	Name      string      `json:"name"`
-	Data      string      `json:"data"`
-	Priority  interface{} `json:"priority"`
-	TTL       string      `json:"ttl"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt time.Time   `json:"updated_at"`
+	ID        *string      `json:"id"`
+	Type      *string      `json:"type"`
+	Name      *string      `json:"name"`
+	Data      *string      `json:"data"`
+	Priority  *interface{} `json:"priority"`
+	TTL       *string      `json:"ttl"`
+	CreatedAt *string   `json:"created_at"`
+	UpdatedAt *string   `json:"updated_at"`
 }
 
 type DNSRecords struct {

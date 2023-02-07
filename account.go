@@ -1,4 +1,4 @@
-package omglol
+package client
 
 import (
 	"bytes"
