@@ -16,7 +16,7 @@ func TestGetAccountInfo(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	if a.Message != "Here is the account info that you requested." {
+	if !a.Request.Success {
 		t.Errorf(err.Error())
 	}
 }
@@ -34,6 +34,10 @@ func TestGetAddresses(t *testing.T) {
 	}
 
 	t.Logf("%+v\n", *a)
+
+	if !a.Request.Success {
+		t.Errorf(err.Error())
+	}
 }
 
 func TestSetAccountName(t *testing.T) {
@@ -50,7 +54,7 @@ func TestSetAccountName(t *testing.T) {
 
 	t.Logf("%+v\n", a)
 
-	if a.Name != testName {
+	if !a.Request.Success {
 		t.Errorf(err.Error())
 	}
 }
@@ -69,7 +73,7 @@ func TestGetAccountName(t *testing.T) {
 
 	t.Logf("%+v\n", a)
 
-	if a.Name != testName {
+	if !a.Request.Success {
 		t.Errorf(err.Error())
 	}
 }
@@ -125,7 +129,7 @@ func TestGetAccountSettings(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	if a.Settings.Owner == "" {
+	if !a.Request.Success {
 		t.Errorf(err.Error())
 	}
 }

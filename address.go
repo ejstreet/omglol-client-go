@@ -7,7 +7,7 @@ import (
 )
 
 // Get information about the availability of an address. See https://api.omg.lol/#noauth-get-address-retrieve-address-availability
-func (c *Client) GetAddressAvailability(address string) (*Address, error) {
+func (c *Client) GetAddressAvailability(address string) (*AddressAvailability, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/address/%s/availability", c.HostURL, address), nil)
 	if err != nil {
 		return nil, err
@@ -18,15 +18,9 @@ func (c *Client) GetAddressAvailability(address string) (*Address, error) {
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
-	var a Address
-	if err := json.Unmarshal(response.Response, &a); err != nil {
-		fmt.Printf("Error unmarshaling address: %v\n", err)
+	var a AddressAvailability
+	if err := json.Unmarshal(body, &a); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -35,7 +29,7 @@ func (c *Client) GetAddressAvailability(address string) (*Address, error) {
 
 // Get the expiration date for an address. See https://api.omg.lol/#noauth-get-address-retrieve-address-expiration
 func (c *Client) GetAddressExpiration(address string) (*AddressExpiration, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/address/%s/availability", c.HostURL, address), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/address/%s/expiration", c.HostURL, address), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -45,15 +39,9 @@ func (c *Client) GetAddressExpiration(address string) (*AddressExpiration, error
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
 	var e AddressExpiration
-	if err := json.Unmarshal(response.Response, &e); err != nil {
-		fmt.Printf("Error unmarshaling address expiration: %v\n", err)
+	if err := json.Unmarshal(body, &e); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -72,18 +60,32 @@ func (c *Client) GetAddressInfo(address string) (*AddressInfo, error) {
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
 	var i AddressInfo
-	if err := json.Unmarshal(response.Response, &i); err != nil {
-		fmt.Printf("Error unmarshaling address detail: %v\n", err)
+	if err := json.Unmarshal(body, &i); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
 	return &i, nil
 }
 
+// Retrieve the address directory. See https://api.omg.lol/#noauth-get-directory-retreive-the-address-directory
+func (c *Client) GetAddressDirectory() (*AddressDirectory, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/directory", c.HostURL), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var directory AddressDirectory
+	if err := json.Unmarshal(body, &directory); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
+		return nil, err
+	}
+
+	return &directory, nil
+}

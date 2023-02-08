@@ -19,15 +19,9 @@ func (c *Client) GetAccountInfo() (*Account, error) {
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
 	var account Account
-	if err := json.Unmarshal(response.Response, &account); err != nil {
-		fmt.Printf("Error unmarshaling account: %v\n", err)
+	if err := json.Unmarshal(body, &account); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -49,7 +43,7 @@ func (c *Client) GetAccountAddresses() (*Addresses, error) {
 	var addresses Addresses
 	err = json.Unmarshal(body, &addresses)
 	if err != nil {
-		return nil, fmt.Errorf("Error unmarshalling body to Addresses: %v", err)
+		return nil, fmt.Errorf("Error unmarshalling response: %v", err)
 	}
 
 	return &addresses, nil
@@ -67,15 +61,9 @@ func (c *Client) GetAccountName() (*AccountName, error) {
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
 	var name AccountName
-	if err := json.Unmarshal(response.Response, &name); err != nil {
-		fmt.Printf("Error unmarshaling account: %v\n", err)
+	if err := json.Unmarshal(body, &name); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -86,7 +74,7 @@ func (c *Client) GetAccountName() (*AccountName, error) {
 func (c *Client) SetAccountName(name string) (*AccountName, error) {
 	jsonData := fmt.Sprintf(`{"name": "%s"}`, name)
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/account/%s/name", c.HostURL, c.Auth.Email), bytes.NewBuffer([]byte(jsonData)))
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -96,15 +84,9 @@ func (c *Client) SetAccountName(name string) (*AccountName, error) {
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
 	var account_name AccountName
-	if err := json.Unmarshal(response.Response, &account_name); err != nil {
-		fmt.Printf("Error unmarshaling account: %v\n", err)
+	if err := json.Unmarshal(body, &account_name); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -126,7 +108,7 @@ func (c *Client) GetActiveSessions() (*ActiveSessions, error) {
 	var sessions ActiveSessions
 	err = json.Unmarshal(body, &sessions)
 	if err != nil {
-		return nil, fmt.Errorf("Error unmarshalling body to ActiveSessions: %v", err)
+		return nil, fmt.Errorf("Error unmarshalling response: %v", err)
 	}
 
 	return &sessions, nil
@@ -146,7 +128,7 @@ func (c *Client) DeleteActiveSession(sessionID string) (*MessageResponse, error)
 
 	var response MessageResponse
 	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -165,15 +147,9 @@ func (c *Client) GetAccountSettings() (*AccountSettings, error) {
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
 	var settings AccountSettings
-	if err := json.Unmarshal(response.Response, &settings); err != nil {
-		fmt.Printf("Error unmarshaling account: %v\n", err)
+	if err := json.Unmarshal(body, &settings); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -184,7 +160,7 @@ func (c *Client) GetAccountSettings() (*AccountSettings, error) {
 func (c *Client) SetAccountSettings(settings map[string]string) (*MessageResponse, error) {
 	jsonData, err := json.Marshal(settings)
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/account/%s/settings", c.HostURL, c.Auth.Email), bytes.NewBuffer([]byte(jsonData)))
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +172,7 @@ func (c *Client) SetAccountSettings(settings map[string]string) (*MessageRespons
 
 	var response MessageResponse
 	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 

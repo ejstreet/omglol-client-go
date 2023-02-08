@@ -19,15 +19,9 @@ func (c *Client) GetDNSRecords(address string) (*DNSRecords, error) {
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
 	var d DNSRecords
-	if err := json.Unmarshal(response.Response, &d); err != nil {
-		fmt.Printf("Error unmarshaling DNS records: %v\n", err)
+	if err := json.Unmarshal(body, &d); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -35,7 +29,6 @@ func (c *Client) GetDNSRecords(address string) (*DNSRecords, error) {
 }
 
 // Find a single DNS record from its attributes.
-// 
 func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]interface{}) (*DNSRecord, error) {
 	records, err := c.GetDNSRecords(address)
 	if err != nil {
@@ -43,75 +36,75 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 	}
 
 	var matchedRecord DNSRecord
-    var matchCount int
-    for _, record := range records.DNS {
-        match := true
-        for key, value := range filterCriteria {
-            switch key {
-            case "ID":
-                if *record.ID != value.(string) {
-                    match = false
-                    break
-                }
-            case "Type":
-                if *record.Type != value.(string) {
-                    match = false
-                    break
-                }
-            case "Name":
-                if *record.Name != value.(string) {
-                    match = false
-                    break
-                }
-            case "Data":
-                if *record.Data != value.(string) {
-                    match = false
-                    break
-                }
-            case "Priority":
-                priority, ok := value.(*int)
-                if !ok {
-                    match = false
-                    break
-                }
-                if *record.Priority == nil || *record.Priority != priority {
-                    match = false
-                    break
-                }
-            case "TTL":
-                if *record.TTL != value.(string) {
-                    match = false
-                    break
-                }
-            case "CreatedAt":
-                if *record.CreatedAt != value.(string) {
-                    match = false
-                    break
-                }
-            case "UpdatedAt":
-                if *record.UpdatedAt != value.(string) {
-                    match = false
-                    break
-                }
-            default:
-                return nil, fmt.Errorf("Invalid filter criteria key: %s", key)
-            }
-            if !match {
-                break
-            }
-        }
-        if match {
-            matchedRecord = record
-            matchCount++
-            if matchCount > 1 {
-                return nil, fmt.Errorf("More than one record matches the filter criteria")
-            }
-        }
-    }
-    if matchCount == 0 {
-        return nil, fmt.Errorf("No records match the filter criteria")
-    }
-    return &matchedRecord, nil
+	var matchCount int
+	for _, record := range records.Response.DNS {
+		match := true
+		for key, value := range filterCriteria {
+			switch key {
+			case "ID":
+				if *record.ID != value.(string) {
+					match = false
+					break
+				}
+			case "Type":
+				if *record.Type != value.(string) {
+					match = false
+					break
+				}
+			case "Name":
+				if *record.Name != value.(string) {
+					match = false
+					break
+				}
+			case "Data":
+				if *record.Data != value.(string) {
+					match = false
+					break
+				}
+			case "Priority":
+				priority, ok := value.(*int)
+				if !ok {
+					match = false
+					break
+				}
+				if *record.Priority == nil || *record.Priority != priority {
+					match = false
+					break
+				}
+			case "TTL":
+				if *record.TTL != value.(string) {
+					match = false
+					break
+				}
+			case "CreatedAt":
+				if *record.CreatedAt != value.(string) {
+					match = false
+					break
+				}
+			case "UpdatedAt":
+				if *record.UpdatedAt != value.(string) {
+					match = false
+					break
+				}
+			default:
+				return nil, fmt.Errorf("Invalid filter criteria key: %s", key)
+			}
+			if !match {
+				break
+			}
+		}
+		if match {
+			matchedRecord = record
+			matchCount++
+			if matchCount > 1 {
+				return nil, fmt.Errorf("More than one record matches the filter criteria")
+			}
+		}
+	}
+	if matchCount == 0 {
+		return nil, fmt.Errorf("No records match the filter criteria")
+	}
+	return &matchedRecord, nil
 }
 
 // Add a new DNS record. See https://api.omg.lol/#token-post-dns-create-a-new-dns-record
@@ -129,15 +122,9 @@ func (c *Client) CreateDNSRecord(domain string, record map[string]string) (*DNSC
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
 	var d DNSChangeResponse
-	if err := json.Unmarshal(response.Response, &d); err != nil {
-		fmt.Printf("Error unmarshaling account: %v\n", err)
+	if err := json.Unmarshal(body, &d); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -161,15 +148,9 @@ func (c *Client) UpdateDNSRecord(domain string, record map[string]string, record
 		return nil, err
 	}
 
-	var response Response
-	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
-		return nil, err
-	}
-
 	var d DNSChangeResponse
-	if err := json.Unmarshal(response.Response, &d); err != nil {
-		fmt.Printf("Error unmarshaling account: %v\n", err)
+	if err := json.Unmarshal(body, &d); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
@@ -191,7 +172,7 @@ func (c *Client) DeleteDNSRecord(domain string, record_id int) (*MessageResponse
 
 	var response MessageResponse
 	if err := json.Unmarshal(body, &response); err != nil {
-		fmt.Printf("Error unmarshaling response: %v\n", err)
+		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 

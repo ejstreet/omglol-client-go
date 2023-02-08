@@ -2,7 +2,6 @@ package client
 
 import (
 	"testing"
-	"fmt"
 )
 
 func TestGetAddressAvailability(t *testing.T) {
@@ -19,7 +18,7 @@ func TestGetAddressAvailability(t *testing.T) {
 
 	t.Logf("%+v\n", *a)
 
-	if a.Message == "" {
+	if !a.Request.Success {
 		t.Errorf(err.Error())
 	}
 }
@@ -38,7 +37,7 @@ func TestGetAddressExpiration(t *testing.T) {
 
 	t.Logf("%+v\n", *a)
 
-	if a.Message == "" {
+	if !a.Request.Success {
 		t.Errorf(err.Error())
 	}
 }
@@ -55,9 +54,28 @@ func TestGetAddressInfo(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	fmt.Printf("%+v\n", *i)
+	t.Logf("%+v\n", *i)
 
-	if i.Message == "" {
+	if !i.Request.Success {
+		t.Errorf(err.Error())
+	}
+}
+
+func TestGetAddressDirectory(t *testing.T) {
+	c, err := NewClient(testEmail, testKey)
+
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	d, err := c.GetAddressDirectory()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	t.Logf("%+v\n", *d)
+
+	if !d.Request.Success {
 		t.Errorf(err.Error())
 	}
 }

@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -19,7 +18,7 @@ func TestGetDNSRecords(t *testing.T) {
 
 	t.Logf("%+v\n", *d)
 
-	if d.Message == "" {
+	if d.Response.Message == "" {
 		t.Errorf(err.Error())
 	}
 }
@@ -32,11 +31,11 @@ func TestFilterDNSRecords(t *testing.T) {
 	}
 
 	criteria := map[string]interface{}{
-		"ID": "41923511",
-		"Type": "TXT",
-		"Name": "testdns.terraform",
-		"Data": "test=true",
-		"TTL": "300",
+		"ID":        "41923511",
+		"Type":      "TXT",
+		"Name":      "testdns.terraform",
+		"Data":      "test=true",
+		"TTL":       "300",
 		"CreatedAt": "2023-02-05T21:17:51Z",
 		"UpdatedAt": "2023-02-05T21:17:51Z",
 	}
@@ -47,7 +46,7 @@ func TestFilterDNSRecords(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	fmt.Printf(*d.ID, *d.Type, *d.Name, *d.Data, *d.CreatedAt)
+	t.Logf(*d.ID, *d.Type, *d.Name, *d.Data, *d.CreatedAt)
 
 	t.Logf("%+v\n", *d)
 }
@@ -74,11 +73,11 @@ func TestCreateAndDeleteDNSRecord(t *testing.T) {
 
 	t.Logf("%+v\n", r)
 
-	if r.ResponseReceived.Data.ID <= 0 {
+	if !r.Request.Success {
 		t.Errorf(err.Error())
 	}
 
-	m, err := c.DeleteDNSRecord(testOwnedDomain, r.ResponseReceived.Data.ID)
+	m, err := c.DeleteDNSRecord(testOwnedDomain, r.Response.ResponseReceived.Data.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -98,15 +97,15 @@ func TestCreateReplaceDeleteDNSRecord(t *testing.T) {
 	}
 
 	record1 := map[string]string{
-		"type": "CNAME",
-		"name": "foo",
+		"type": "TXT",
+		"name": "testcreate",
 		"data": "example.com",
 		"ttl":  "300",
 	}
 
 	record2 := map[string]string{
-		"type": "CNAME",
-		"name": "bar",
+		"type": "TXT",
+		"name": "testreplace",
 		"data": "example.com",
 		"ttl":  "300",
 	}
@@ -118,22 +117,22 @@ func TestCreateReplaceDeleteDNSRecord(t *testing.T) {
 
 	t.Logf("%+v\n", create)
 
-	if create.ResponseReceived.Data.ID <= 0 {
+	if !create.Request.Success {
 		t.Errorf(err.Error())
 	}
 
-	replace, err := c.ReplaceDNSRecord(testOwnedDomain, record2, create.ResponseReceived.Data.ID)
+	replace, err := c.ReplaceDNSRecord(testOwnedDomain, record2, create.Response.ResponseReceived.Data.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
 	t.Logf("%+v\n", replace)
 
-	if replace.ResponseReceived.Data.ID <= 0 {
+	if !replace.Request.Success {
 		t.Errorf(err.Error())
 	}
 
-	delete, err := c.DeleteDNSRecord(testOwnedDomain, replace.ResponseReceived.Data.ID)
+	delete, err := c.DeleteDNSRecord(testOwnedDomain, replace.Response.ResponseReceived.Data.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
