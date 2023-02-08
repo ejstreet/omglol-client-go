@@ -208,3 +208,15 @@ type PersistantURL struct {
 		} `json:"purl"`
 	} `json:"response"`
 }
+
+type PersistantURLs struct {
+	Request  Request `json:"request"`
+	Response struct {
+		Message string `json:"message"`
+		Purl    []struct {
+			Name    string      `json:"name"`
+			Url     string      `json:"url"`
+			Counter interface{} `json:"counter"`
+		} `json:"purls"`
+	} `json:"response"`
+}

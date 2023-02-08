@@ -4,14 +4,14 @@ import (
 	"testing"
 )
 
-func TestGetDNSRecords(t *testing.T) {
+func TestListDNSRecords(t *testing.T) {
 	c, err := NewClient(testEmail, testKey)
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	d, err := c.GetDNSRecords(testOwnedDomain)
+	d, err := c.ListDNSRecords(testOwnedDomain)
 	if err != nil {
 		t.Errorf(err.Error())
 	}

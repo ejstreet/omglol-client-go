@@ -8,7 +8,7 @@ import (
 )
 
 // Get a list of all of your DNS records for an address. See https://api.omg.lol/#token-get-dns-retrieve-dns-records-for-an-address
-func (c *Client) GetDNSRecords(address string) (*DNSRecords, error) {
+func (c *Client) ListDNSRecords(address string) (*DNSRecords, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/address/%s/dns", c.HostURL, address), nil)
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func (c *Client) GetDNSRecords(address string) (*DNSRecords, error) {
 
 // Find a single DNS record from its attributes.
 func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]interface{}) (*DNSRecord, error) {
-	records, err := c.GetDNSRecords(address)
+	records, err := c.ListDNSRecords(address)
 	if err != nil {
 		return nil, err
 	}
