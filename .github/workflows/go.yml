@@ -15,4 +15,9 @@ jobs:
           go-version: '1.20'
 
       - name: Test
+        env:
+          OMGLOL_API_KEY: ${{ Secrets.OMGLOL_API_KEY }}
+          OMGLOL_USERNAME: ${{ Secrets.OMGLOL_USERNAME }}
+          OMGLOL_USER_EMAIL: ${{ Secrets.OMGLOL_USER_EMAIL }}
+          OMGLOL_TEST_OWNED_DOMAIN: ${{ Secrets.OMGLOL_TEST_OWNED_DOMAIN }}
         run: go test -v ./...
