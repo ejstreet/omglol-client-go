@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 // Get a list of all of your DNS records for an address. See https://api.omg.lol/#token-get-dns-retrieve-dns-records-for-an-address
-func (c *Client) ListDNSRecords(address string) (*DNSRecords, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/address/%s/dns", c.HostURL, address), nil)
+func (c *Client) ListDNSRecords(address string) (*[]DNSRecord, error) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/address/%s/dns", c.HostURL, address), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -19,10 +20,55 @@ func (c *Client) ListDNSRecords(address string) (*DNSRecords, error) {
 		return nil, err
 	}
 
-	var d DNSRecords
-	if err := json.Unmarshal(body, &d); err != nil {
+	type recordsResponse struct {
+		Request  request `json:"request"`
+		Response struct {
+			Message string `json:"message"`
+			DNS     []struct {
+				ID        string  `json:"id"`
+				Type      string  `json:"type"`
+				Name      string  `json:"name"`
+				Data      string  `json:"data"`
+				Priority  *string `json:"priority"`
+				TTL       string  `json:"ttl"`
+				CreatedAt string  `json:"created_at"`
+				UpdatedAt string  `json:"updated_at"`
+			} `json:"dns"`
+		} `json:"response"`
+	}
+
+	var r recordsResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
+	}
+
+	// Some type conversion is required, as the API is a little inconsistent with its return types
+
+	var d []DNSRecord
+
+	for _, record := range r.Response.DNS {
+		var x DNSRecord
+
+		x.Type = &record.Type
+		x.Name = &record.Name
+		x.Data = &record.Data
+		x.CreatedAt = &record.CreatedAt
+		x.UpdatedAt = &record.UpdatedAt
+
+		id, _ := strconv.Atoi(record.ID)
+		x.ID = &id
+		ttl, _ := strconv.Atoi(record.TTL)
+		x.TTL = &ttl
+
+		if record.Priority == nil {
+			x.Priority = nil
+		} else {
+			p, _ := strconv.Atoi(*record.Priority)
+			x.Priority = &p
+		}
+
+		d = append(d, x)
 	}
 
 	return &d, nil
@@ -37,12 +83,12 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 
 	var matchedRecord DNSRecord
 	var matchCount int
-	for _, record := range records.Response.DNS {
+	for _, record := range *records {
 		match := true
 		for key, value := range filterCriteria {
 			switch key {
 			case "ID":
-				if *record.ID != value.(string) {
+				if *record.ID != value.(int) {
 					match = false
 					break
 				}
@@ -67,12 +113,12 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 					match = false
 					break
 				}
-				if *record.Priority == nil || *record.Priority != priority {
+				if record.Priority != priority {
 					match = false
 					break
 				}
 			case "TTL":
-				if *record.TTL != value.(string) {
+				if *record.TTL != value.(int) {
 					match = false
 					break
 				}
@@ -111,7 +157,7 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 func (c *Client) CreateDNSRecord(domain string, record map[string]string) (*DNSChangeResponse, error) {
 	jsonData, err := json.Marshal(record)
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/address/%s/dns", c.HostURL, domain), bytes.NewBuffer([]byte(jsonData)))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/address/%s/dns", c.HostURL, domain), bytes.NewBuffer([]byte(jsonData)))
 
 	if err != nil {
 		return nil, err
@@ -137,7 +183,7 @@ func (c *Client) CreateDNSRecord(domain string, record map[string]string) (*DNSC
 func (c *Client) UpdateDNSRecord(domain string, record map[string]string, record_id int) (*DNSChangeResponse, error) {
 	jsonData, err := json.Marshal(record)
 
-	req, err := http.NewRequest("PATCH", fmt.Sprintf("%s/address/%s/dns/%d", c.HostURL, domain, record_id), bytes.NewBuffer([]byte(jsonData)))
+	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/address/%s/dns/%d", c.HostURL, domain, record_id), bytes.NewBuffer([]byte(jsonData)))
 
 	if err != nil {
 		return nil, err
@@ -158,30 +204,30 @@ func (c *Client) UpdateDNSRecord(domain string, record map[string]string, record
 }
 
 // Delete a DNS record. See https://api.omg.lol/#token-delete-dns-delete-a-dns-record
-func (c *Client) DeleteDNSRecord(domain string, record_id int) (*MessageResponse, error) {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/address/%s/dns/%d", c.HostURL, domain, record_id), nil)
+func (c *Client) DeleteDNSRecord(domain string, record_id int) error {
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/address/%s/dns/%d", c.HostURL, domain, record_id), nil)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	body, err := c.doRequest(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var response MessageResponse
-	if err := json.Unmarshal(body, &response); err != nil {
+	var r apiResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
-		return nil, err
+		return err
 	}
 
-	return &response, nil
+	return nil
 }
 
 // Delete a record with a given ID, then Create a new one using the provided values.
 func (c *Client) ReplaceDNSRecord(domain string, record map[string]string, record_id int) (*DNSChangeResponse, error) {
-	_, err := c.DeleteDNSRecord(domain, record_id)
+	err := c.DeleteDNSRecord(domain, record_id)
 	if err != nil {
 		return nil, err
 	}

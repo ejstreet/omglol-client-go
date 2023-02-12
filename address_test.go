@@ -17,10 +17,6 @@ func TestGetAddressAvailability(t *testing.T) {
 	}
 
 	t.Logf("%+v\n", *a)
-
-	if !a.Request.Success {
-		t.Errorf(err.Error())
-	}
 }
 
 func TestGetAddressExpiration(t *testing.T) {
@@ -36,10 +32,6 @@ func TestGetAddressExpiration(t *testing.T) {
 	}
 
 	t.Logf("%+v\n", *a)
-
-	if !a.Request.Success {
-		t.Errorf(err.Error())
-	}
 }
 
 func TestGetAddressInfo(t *testing.T) {
@@ -55,10 +47,6 @@ func TestGetAddressInfo(t *testing.T) {
 	}
 
 	t.Logf("%+v\n", *i)
-
-	if !i.Request.Success {
-		t.Errorf(err.Error())
-	}
 }
 
 func TestGetAddressDirectory(t *testing.T) {
@@ -74,8 +62,4 @@ func TestGetAddressDirectory(t *testing.T) {
 	}
 
 	t.Logf("%+v\n", *d)
-
-	if !d.Request.Success {
-		t.Errorf(err.Error())
-	}
 }

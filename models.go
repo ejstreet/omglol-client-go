@@ -1,19 +1,17 @@
 package client
 
-// import (
-// 	"encoding/json"
-// )
+import (
+	"encoding/json"
+)
 
-type Request struct {
+type request struct {
 	StatusCode int  `json:"status_code"`
 	Success    bool `json:"success"`
 }
 
-type MessageResponse struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message string `json:"message,omitempty"`
-	} `json:"response"`
+type apiResponse struct {
+	Request  request         `json:"request"`
+	Response json.RawMessage `json:"response"`
 }
 
 type Registration struct {
@@ -24,155 +22,93 @@ type Registration struct {
 	RelativeTime  string `json:"relative_time,omitempty"`
 }
 
-type Account struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message string `json:"message,omitempty"`
-		Email   string `json:"email,omitempty"`
-		Name    string `json:"name,omitempty"`
-		Created struct {
-			UnixEpochTime string `json:"unix_epoch_time,omitempty"`
-			Iso8601Time   string `json:"iso_8601_time,omitempty"`
-			Rfc2822Time   string `json:"rfc_2822_time,omitempty"`
-			RelativeTime  string `json:"relative_time,omitempty"`
-		} `json:"created,omitempty"`
-		APIKey   string `json:"api_key,omitempty"`
-		Settings struct {
-			Owner         string `json:"owner,omitempty"`
-			Communication string `json:"communication,omitempty"`
-			DateFormat    string `json:"date_format,omitempty"`
-			WebEditor     string `json:"web_editor,omitempty"`
-		} `json:"settings,omitempty"`
-	} `json:"response"`
-}
-
 type AccountSettings struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message  string `json:"message,omitempty"`
-		Settings struct {
-			Owner         string `json:"owner,omitempty"`
-			Communication string `json:"communication,omitempty"`
-			DateFormat    string `json:"date_format,omitempty"`
-			WebEditor     string `json:"web_editor,omitempty"`
-		} `json:"settings,omitempty"`
-	} `json:"response"`
+	Owner         string `json:"owner,omitempty"`
+	Communication string `json:"communication,omitempty"`
+	DateFormat    string `json:"date_format,omitempty"`
+	WebEditor     string `json:"web_editor,omitempty"`
 }
 
-type AccountName struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message string `json:"message,omitempty"`
-		Name    string `json:"name,omitempty"`
-	} `json:"response"`
+type Account struct {
+	Message string `json:"message,omitempty"`
+	Email   string `json:"email,omitempty"`
+	Name    string `json:"name,omitempty"`
+	Created struct {
+		UnixEpochTime string `json:"unix_epoch_time,omitempty"`
+		Iso8601Time   string `json:"iso_8601_time,omitempty"`
+		Rfc2822Time   string `json:"rfc_2822_time,omitempty"`
+		RelativeTime  string `json:"relative_time,omitempty"`
+	} `json:"created,omitempty"`
+	APIKey   string          `json:"api_key,omitempty"`
+	Settings AccountSettings `json:"settings,omitempty"`
 }
 
-type ActiveSessions struct {
-	Request  Request `json:"request"`
-	Response []struct {
-		SessionID string `json:"session_id"`
-		UserAgent string `json:"user_agent"`
-		CreatedIP string `json:"created_ip"`
-		CreatedOn string `json:"created_on"`
-		ExpiresOn string `json:"expires_on"`
-	} `json:"response"`
+type ActiveSession struct {
+	SessionID string `json:"session_id"`
+	UserAgent string `json:"user_agent"`
+	CreatedIP string `json:"created_ip"`
+	CreatedOn string `json:"created_on"`
+	ExpiresOn string `json:"expires_on"`
 }
 
 type Address struct {
-	Address      string       `json:"address"`
-	Message      string       `json:"message,omitempty"`
-	Punycode     string       `json:"punycode,omitempty"`
-	SeeAlso      string       `json:"see-also,omitempty"`
-	Registration Registration `json:"registration"`
-	Expiration   struct {
-		Expired    bool `json:"expired"`
-		WillExpire bool `json:"will_expire"`
-	} `json:"expiration"`
-	Owner string `json:"owner,omitempty"`
-}
-
-type Addresses struct {
-	Request  Request   `json:"request"`
-	Response []Address `json:"response"`
+	Address      string            `json:"address"`
+	Message      string            `json:"message,omitempty"`
+	Punycode     string            `json:"punycode,omitempty"`
+	SeeAlso      string            `json:"see-also,omitempty"`
+	Registration Registration      `json:"registration"`
+	Expiration   AddressExpiration `json:"expiration"`
+	Owner        string            `json:"owner,omitempty"`
 }
 
 type AddressAvailability struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message      string `json:"message"`
-		Address      string `json:"address"`
-		Available    bool   `json:"available"`
-		Availability string `json:"availability"`
-	} `json:"response"`
+	Message      string `json:"message"`
+	Address      string `json:"address"`
+	Available    bool   `json:"available"`
+	Availability string `json:"availability"`
 }
 
 type AddressExpiration struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message string `json:"message,omitempty"`
-		Expired bool   `json:"expired,omitempty"`
-	} `json:"response"`
+	Message       string `json:"message,omitempty"`
+	Expired       bool   `json:"expired,omitempty"`
+	WillExpire    bool   `json:"will_expire,omitempty"`
+	UnixEpochTime string `json:"unix_epoch_time,omitempty"`
+	Iso8601Time   string `json:"iso_8601_time,omitempty"`
+	Rfc2822Time   string `json:"rfc_2822_time,omitempty"`
+	RelativeTime  string `json:"relative_time,omitempty"`
 }
 
 type AddressInfo struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Address      string `json:"address"`
-		Message      string `json:"message"`
-		Registration struct {
-			Message       string `json:"message"`
-			UnixEpochTime string `json:"unix_epoch_time"`
-			Iso8601Time   string `json:"iso_8601_time"`
-			Rfc2822Time   string `json:"rfc_2822_time"`
-			RelativeTime  string `json:"relative_time"`
-		} `json:"registration"`
-		Expiration struct {
-			Message       string `json:"message"`
-			Expired       bool   `json:"expired"`
-			WillExpire    bool   `json:"will_expire"`
-			UnixEpochTime string `json:"unix_epoch_time"`
-			Iso8601Time   string `json:"iso_8601_time"`
-			Rfc2822Time   string `json:"rfc_2822_time"`
-			RelativeTime  string `json:"relative_time"`
-		} `json:"expiration"`
-		Verification struct {
-			Message  string `json:"message"`
-			Verified bool   `json:"verified"`
-		} `json:"verification"`
-		Owner string `json:"owner"`
-	} `json:"response"`
+	Address      string            `json:"address"`
+	Message      string            `json:"message"`
+	Registration Registration      `json:"registration"`
+	Expiration   AddressExpiration `json:"expiration"`
+	Verification struct {
+		Message  string `json:"message"`
+		Verified bool   `json:"verified"`
+	} `json:"verification"`
+	Owner string `json:"owner"`
 }
 
 type AddressDirectory struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message   string   `json:"message"`
-		URL       string   `json:"url"`
-		Directory []string `json:"directory"`
-	} `json:"response"`
+	Message   string   `json:"message"`
+	URL       string   `json:"url"`
+	Directory []string `json:"directory"`
 }
 
 type DNSRecord struct {
-	ID        *string      `json:"id"`
-	Type      *string      `json:"type"`
-	Name      *string      `json:"name"`
-	Data      *string      `json:"data"`
-	Priority  *interface{} `json:"priority"`
-	TTL       *string      `json:"ttl"`
-	CreatedAt *string      `json:"created_at"`
-	UpdatedAt *string      `json:"updated_at"`
-}
-
-type DNSRecords struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message string      `json:"message,omitempty"`
-		DNS     []DNSRecord `json:"dns"`
-	} `json:"response"`
+	ID        *int    `json:"id"`
+	Type      *string `json:"type"`
+	Name      *string `json:"name"`
+	Data      *string `json:"data"`
+	Priority  *int    `json:"priority"`
+	TTL       *int    `json:"ttl"`
+	CreatedAt *string `json:"created_at"`
+	UpdatedAt *string `json:"updated_at"`
 }
 
 type DNSChangeResponse struct {
-	Request  Request `json:"request"`
+	Request  request `json:"request"`
 	Response struct {
 		Message  string `json:"message"`
 		DataSent struct {
@@ -198,25 +134,13 @@ type DNSChangeResponse struct {
 }
 
 type PersistantURL struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message string `json:"message"`
-		Purl    struct {
-			Name    string      `json:"name"`
-			Url     string      `json:"url"`
-			Counter interface{} `json:"counter"`
-		} `json:"purl"`
-	} `json:"response"`
+	Name    string `json:"name"`
+	Url     string `json:"url"`
+	Counter *int   `json:"counter"`
 }
 
-type PersistantURLs struct {
-	Request  Request `json:"request"`
-	Response struct {
-		Message string `json:"message"`
-		Purl    []struct {
-			Name    string      `json:"name"`
-			Url     string      `json:"url"`
-			Counter interface{} `json:"counter"`
-		} `json:"purls"`
-	} `json:"response"`
+type PersistantURLCreateResponse struct {
+	Message string `json:"message"`
+	Name    string `json:"name"`
+	Url     string `json:"url"`
 }

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"os"
 	"testing"
 )
 
@@ -16,9 +17,7 @@ func TestGetAccountInfo(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	if !a.Request.Success {
-		t.Errorf(err.Error())
-	}
+	t.Logf("%+v\n", *a)
 }
 
 func TestGetAddresses(t *testing.T) {
@@ -34,10 +33,6 @@ func TestGetAddresses(t *testing.T) {
 	}
 
 	t.Logf("%+v\n", *a)
-
-	if !a.Request.Success {
-		t.Errorf(err.Error())
-	}
 }
 
 func TestSetAccountName(t *testing.T) {
@@ -47,14 +42,7 @@ func TestSetAccountName(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	a, err := c.SetAccountName(testName)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-
-	t.Logf("%+v\n", a)
-
-	if !a.Request.Success {
+	if err := c.SetAccountName(testName); err != nil {
 		t.Errorf(err.Error())
 	}
 }
@@ -66,15 +54,15 @@ func TestGetAccountName(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	a, err := c.GetAccountName()
+	name, err := c.GetAccountName()
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf("%+v\n", a)
+	t.Logf("%+v\n", *name)
 
-	if !a.Request.Success {
-		t.Errorf(err.Error())
+	if *name != testName {
+		t.Errorf("Expected %s, got %s", testName, *name)
 	}
 }
 
@@ -91,31 +79,26 @@ func TestGetActiveSessions(t *testing.T) {
 	}
 
 	t.Logf("%+v\n", a)
-
-	if !a.Request.Success {
-		t.Errorf(err.Error())
-	}
 }
 
 // This test cannot currently be run automatically
-// func TestDeleteActiveSession(t *testing.T) {
-// 	c, err := NewClient(testEmail, testKey)
+func TestDeleteActiveSession(t *testing.T) {
+	sessionID := os.Getenv("OMGLOL_DELETABLE_SESSION_ID")
 
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 	}
+	if sessionID == "" {
+		t.Skip()
+	}
 
-// 	a, err := c.DeleteActiveSession("1be17d138f202b0fba996192f22cc249")
-//  if err != nil {
-// 	  t.Errorf(err.Error())
-//  }
+	c, err := NewClient(testEmail, testKey)
 
-// 	t.Logf("%+v\n", a)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
-// 	if !a.Request.Success {
-// 		t.Errorf(err.Error())
-// 	}
-// }
+	if err := c.DeleteActiveSession(sessionID); err != nil {
+		t.Errorf(err.Error())
+	}
+}
 
 func TestGetAccountSettings(t *testing.T) {
 	c, err := NewClient(testEmail, testKey)
@@ -124,14 +107,12 @@ func TestGetAccountSettings(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	a, err := c.GetAccountSettings()
+	s, err := c.GetAccountSettings()
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	if !a.Request.Success {
-		t.Errorf(err.Error())
-	}
+	t.Logf("%+v\n", s)
 }
 
 func TestSetAccountSettings(t *testing.T) {
@@ -141,14 +122,8 @@ func TestSetAccountSettings(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	a, err := c.SetAccountSettings(map[string]string{"communication": "email_ok"})
+	err = c.SetAccountSettings(map[string]string{"communication": "email_ok"})
 	if err != nil {
-		t.Errorf(err.Error())
-	}
-
-	t.Logf("%+v\n", a)
-
-	if !a.Request.Success {
 		t.Errorf(err.Error())
 	}
 }

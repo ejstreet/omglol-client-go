@@ -9,7 +9,7 @@ import (
 
 // Get information about your account. See https://api.omg.lol/#token-get-account-retrieve-account-information
 func (c *Client) GetAccountInfo() (*Account, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/account/%s/info", c.HostURL, c.Auth.Email), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/account/%s/info", c.HostURL, c.Auth.Email), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -19,18 +19,23 @@ func (c *Client) GetAccountInfo() (*Account, error) {
 		return nil, err
 	}
 
-	var account Account
-	if err := json.Unmarshal(body, &account); err != nil {
+	type accountResponse struct {
+		Request request `json:"request"`
+		Account Account `json:"response"`
+	}
+
+	var r accountResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
-	return &account, nil
+	return &r.Account, nil
 }
 
 // Get all addresses associated with your account. See https://api.omg.lol/#token-get-account-retrieve-addresses-for-an-account
-func (c *Client) GetAccountAddresses() (*Addresses, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/account/%s/addresses", c.HostURL, c.Auth.Email), nil)
+func (c *Client) GetAccountAddresses() (*[]Address, error) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/account/%s/addresses", c.HostURL, c.Auth.Email), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -40,18 +45,23 @@ func (c *Client) GetAccountAddresses() (*Addresses, error) {
 		return nil, err
 	}
 
-	var addresses Addresses
-	err = json.Unmarshal(body, &addresses)
-	if err != nil {
-		return nil, fmt.Errorf("Error unmarshalling response: %v", err)
+	type addressesResponse struct {
+		Request   request   `json:"request"`
+		Addresses []Address `json:"response"`
 	}
 
-	return &addresses, nil
+	var r addressesResponse
+	if err := json.Unmarshal(body, &r); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
+		return nil, err
+	}
+
+	return &r.Addresses, nil
 }
 
 // Get the name associated with the account. See https://api.omg.lol/#token-get-account-retrieve-the-account-name
-func (c *Client) GetAccountName() (*AccountName, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/account/%s/name", c.HostURL, c.Auth.Email), nil)
+func (c *Client) GetAccountName() (*string, error) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/account/%s/name", c.HostURL, c.Auth.Email), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -61,41 +71,49 @@ func (c *Client) GetAccountName() (*AccountName, error) {
 		return nil, err
 	}
 
-	var name AccountName
-	if err := json.Unmarshal(body, &name); err != nil {
+	type nameResponse struct {
+		Request  request `json:"request"`
+		Response struct {
+			Message string `json:"message"`
+			Name    string `json:"name"`
+		} `json:"response"`
+	}
+
+	var r nameResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
-	return &name, nil
+	return &r.Response.Name, nil
 }
 
 // Set the name associated with the account. See https://api.omg.lol/#token-post-account-set-the-account-name
-func (c *Client) SetAccountName(name string) (*AccountName, error) {
+func (c *Client) SetAccountName(name string) error {
 	jsonData := fmt.Sprintf(`{"name": "%s"}`, name)
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/account/%s/name", c.HostURL, c.Auth.Email), bytes.NewBuffer([]byte(jsonData)))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/account/%s/name", c.HostURL, c.Auth.Email), bytes.NewBuffer([]byte(jsonData)))
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	body, err := c.doRequest(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var account_name AccountName
-	if err := json.Unmarshal(body, &account_name); err != nil {
+	var r apiResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
-		return nil, err
+		return err
 	}
 
-	return &account_name, nil
+	return nil
 }
 
 // Get all sessions associated with the account. See https://api.omg.lol/#token-get-account-retrieve-active-sessions
-func (c *Client) GetActiveSessions() (*ActiveSessions, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/account/%s/sessions", c.HostURL, c.Auth.Email), nil)
+func (c *Client) GetActiveSessions() (*[]ActiveSession, error) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/account/%s/sessions", c.HostURL, c.Auth.Email), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -105,39 +123,44 @@ func (c *Client) GetActiveSessions() (*ActiveSessions, error) {
 		return nil, err
 	}
 
-	var sessions ActiveSessions
-	err = json.Unmarshal(body, &sessions)
-	if err != nil {
-		return nil, fmt.Errorf("Error unmarshalling response: %v", err)
+	type sessionsResponse struct {
+		Request  request         `json:"request"`
+		Sessions []ActiveSession `json:"response"`
 	}
 
-	return &sessions, nil
-}
-
-// Delete a session. See https://api.omg.lol/#token-delete-account-remove-a-session
-func (c *Client) DeleteActiveSession(sessionID string) (*MessageResponse, error) {
-	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/account/%s/sessions/%s", c.HostURL, c.Auth.Email, sessionID), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	body, err := c.doRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	var response MessageResponse
-	if err := json.Unmarshal(body, &response); err != nil {
+	var r sessionsResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
-	return &response, nil
+	return &r.Sessions, nil
+}
+
+// Delete a session. See https://api.omg.lol/#token-delete-account-remove-a-session
+func (c *Client) DeleteActiveSession(sessionID string) error {
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/account/%s/sessions/%s", c.HostURL, c.Auth.Email, sessionID), nil)
+	if err != nil {
+		return err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return err
+	}
+
+	var r apiResponse
+	if err := json.Unmarshal(body, &r); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
+		return err
+	}
+
+	return nil
 }
 
 // Get settings associated with the account. See https://api.omg.lol/#token-get-account-retrieve-account-settings
 func (c *Client) GetAccountSettings() (*AccountSettings, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/account/%s/settings", c.HostURL, c.Auth.Email), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/account/%s/settings", c.HostURL, c.Auth.Email), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -147,34 +170,42 @@ func (c *Client) GetAccountSettings() (*AccountSettings, error) {
 		return nil, err
 	}
 
-	var settings AccountSettings
-	if err := json.Unmarshal(body, &settings); err != nil {
+	type settingsResponse struct {
+		Request  request `json:"request"`
+		Response struct {
+			Message  string          `json:"message"`
+			Settings AccountSettings `json:"settings"`
+		} `json:"response"`
+	}
+
+	var s settingsResponse
+	if err = json.Unmarshal(body, &s); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
-	return &settings, nil
+	return &s.Response.Settings, nil
 }
 
 // Update settings associated with the account. See https://api.omg.lol/#token-post-account-set-account-settings
-func (c *Client) SetAccountSettings(settings map[string]string) (*MessageResponse, error) {
+func (c *Client) SetAccountSettings(settings map[string]string) error {
 	jsonData, err := json.Marshal(settings)
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/account/%s/settings", c.HostURL, c.Auth.Email), bytes.NewBuffer([]byte(jsonData)))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/account/%s/settings", c.HostURL, c.Auth.Email), bytes.NewBuffer([]byte(jsonData)))
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	body, err := c.doRequest(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var response MessageResponse
-	if err := json.Unmarshal(body, &response); err != nil {
+	var r apiResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
-		return nil, err
+		return err
 	}
 
-	return &response, nil
+	return nil
 }
