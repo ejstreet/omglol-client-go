@@ -14,11 +14,11 @@ const HostURL string = "https://api.omg.lol"
 type Client struct {
 	HostURL    string
 	HTTPClient *http.Client
-	Auth       AuthStruct
+	Auth       AuthConfig
 }
 
-// AuthStruct -
-type AuthStruct struct {
+// AuthConfig -
+type AuthConfig struct {
 	Email  string `json:"email"`
 	ApiKey string `json:"api_key"`
 }
@@ -40,7 +40,7 @@ func NewClient(email string, api_key string, host ...string) (*Client, error) {
 		return &c, nil
 	}
 
-	c.Auth = AuthStruct{
+	c.Auth = AuthConfig{
 		Email:  email,
 		ApiKey: api_key,
 	}

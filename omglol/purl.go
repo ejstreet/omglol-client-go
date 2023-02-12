@@ -1,7 +1,6 @@
 package omglol
 
 import (
-	//"bytes"
 	"bytes"
 	"encoding/json"
 	"fmt"
