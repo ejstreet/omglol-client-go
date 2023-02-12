@@ -2,6 +2,8 @@
 # omglol-client-go
 API client library for omg.lol written in Go
 
+Package available at [pkg.go.dev](https://pkg.go.dev/github.com/ejstreet/omglol-client-go)
+
 > **Warning**
 > The omg.lol API is still in development, and endpoints are subject to change. This may cause the client to break unexpectedly.
 
