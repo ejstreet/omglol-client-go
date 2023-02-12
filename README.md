@@ -1,3 +1,4 @@
+[![Tests](https://github.com/ejstreet/omglol-client-go/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/ejstreet/omglol-client-go/actions/workflows/test.yml)
 # omglol-client-go
 API client library for omg.lol written in Go
 
