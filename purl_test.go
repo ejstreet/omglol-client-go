@@ -1,4 +1,4 @@
-package client
+package omglol
 
 import (
 	//	"fmt"
@@ -12,59 +12,49 @@ func TestGetPersistentURL(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	a, err := c.GetPersistentURL(testOwnedDomain, "testget")
+	p, err := c.GetPersistentURL(testOwnedDomain, "testget")
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf("%+v\n", *a)
+	t.Logf(p.ToString())
 }
 
 func TestListPersistentURLs(t *testing.T) {
-	t.Skip() //temporary
 	c, err := NewClient(testEmail, testKey)
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	d, err := c.ListPersistentURLs(testOwnedDomain)
+	l, err := c.ListPersistentURLs(testOwnedDomain)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf("%+v\n", *d)
+	for _, p := range *l {
+		t.Logf(p.ToString() + "\n")
+	}
 }
 
-// func TestCreateAndDeletePersistentURL(t *testing.T) {
-// 	c, err := NewClient(testEmail, testKey)
+func TestCreateAndDeletePersistentURL(t *testing.T) {
+	c, err := NewClient(testEmail, testKey)
 
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 	}
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
-// 	purlName := "test"
+	name := "test" + RunUID
 
-// 	r, err := c.CreatePersistentURL(testOwnedDomain, purlName, "https://example.com")
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 	}
+	p := NewPersistentURL(name, "https://example.com")
 
-// 	fmt.Printf("%+v\n", *r)
-// 	t.Logf("%+v\n", r)
+	err = c.CreatePersistentURL(testOwnedDomain, *p)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
 
-// 	if !r.Request.Success {
-// 		t.Errorf(err.Error())
-// 	}
-
-// 	m, err := c.DeletePersistentURL(testOwnedDomain, purlName)
-// 	if err != nil {
-// 		t.Errorf(err.Error())
-// 	}
-
-// 	t.Logf("%+v\n", m)
-
-// 	if !m.Request.Success {
-// 		t.Errorf(err.Error())
-// 	}
-// }
+	err = c.DeletePersistentURL(testOwnedDomain, name)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+}

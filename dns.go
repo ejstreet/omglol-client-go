@@ -1,4 +1,4 @@
-package client
+package omglol
 
 import (
 	"bytes"
@@ -153,8 +153,49 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 	return &matchedRecord, nil
 }
 
+func NewDNSEntry(Type string, Name string, Data string, TTL int, Priority ...int) *DNSEntry {
+	var priority *int
+	if len(Priority) > 0 {
+		p := Priority[0]
+		priority = &p
+	}
+	return &DNSEntry{
+		Type:     &Type,
+		Name:     &Name,
+		Data:     &Data,
+		TTL:      &TTL,
+		Priority: priority,
+	}
+}
+
+// This function resolves an inconsistency in the current version of the API response. Hopefully it won't be required for too long.
+func convertRecordResponse(r dnsRecordContent) *DNSRecord {
+	var d DNSRecord
+
+	d.ID = r.ID
+	d.Type = r.Type
+	d.Name = r.Name
+	d.Data = r.Content
+	d.Priority = r.Priority
+	d.TTL = r.TTL
+	d.CreatedAt = r.CreatedAt
+	d.UpdatedAt = r.UpdatedAt
+
+	return &d
+}
+
+// Returns a string representaion of a DNS record
+func (d *DNSRecord) ToString() string {
+
+	priority := "<nil>"
+	if d.Priority != nil {
+		priority = strconv.Itoa(*d.Priority)
+	}
+	return fmt.Sprintf("ID: %d, Type: %s, Name: %s, Data: %s, Priority: %s, TTL: %d, CreatedAt: %s, UpdatedAt: %s", *d.ID, *d.Type, *d.Name, *d.Data, priority, *d.TTL, *d.CreatedAt, *d.UpdatedAt)
+}
+
 // Add a new DNS record. See https://api.omg.lol/#token-post-dns-create-a-new-dns-record
-func (c *Client) CreateDNSRecord(domain string, record map[string]string) (*DNSChangeResponse, error) {
+func (c *Client) CreateDNSRecord(domain string, record DNSEntry) (*DNSRecord, error) {
 	jsonData, err := json.Marshal(record)
 
 	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/address/%s/dns", c.HostURL, domain), bytes.NewBuffer([]byte(jsonData)))
@@ -168,19 +209,19 @@ func (c *Client) CreateDNSRecord(domain string, record map[string]string) (*DNSC
 		return nil, err
 	}
 
-	var d DNSChangeResponse
-	if err := json.Unmarshal(body, &d); err != nil {
+	var r dnsChangeResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
-	return &d, nil
+	return convertRecordResponse(r.Response.ResponseReceived.Data), nil
 }
 
 // Update an existing DNS record. See https://api.omg.lol/#token-patch-dns-edit-an-existing-dns-record
 // Note this method does not work at time of writing due to an API bug, see https://github.com/neatnik/omg.lol/issues/584
 // Suggested workaround is to use the Replace function instead, which uses the same interface.
-func (c *Client) UpdateDNSRecord(domain string, record map[string]string, record_id int) (*DNSChangeResponse, error) {
+func (c *Client) UpdateDNSRecord(domain string, record DNSEntry, record_id int) (*DNSRecord, error) {
 	jsonData, err := json.Marshal(record)
 
 	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/address/%s/dns/%d", c.HostURL, domain, record_id), bytes.NewBuffer([]byte(jsonData)))
@@ -194,13 +235,13 @@ func (c *Client) UpdateDNSRecord(domain string, record map[string]string, record
 		return nil, err
 	}
 
-	var d DNSChangeResponse
-	if err := json.Unmarshal(body, &d); err != nil {
+	var r dnsChangeResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
-	return &d, nil
+	return convertRecordResponse(r.Response.ResponseReceived.Data), nil
 }
 
 // Delete a DNS record. See https://api.omg.lol/#token-delete-dns-delete-a-dns-record
@@ -226,7 +267,7 @@ func (c *Client) DeleteDNSRecord(domain string, record_id int) error {
 }
 
 // Delete a record with a given ID, then Create a new one using the provided values.
-func (c *Client) ReplaceDNSRecord(domain string, record map[string]string, record_id int) (*DNSChangeResponse, error) {
+func (c *Client) ReplaceDNSRecord(domain string, record DNSEntry, record_id int) (*DNSRecord, error) {
 	err := c.DeleteDNSRecord(domain, record_id)
 	if err != nil {
 		return nil, err

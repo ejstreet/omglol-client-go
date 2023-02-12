@@ -1,7 +1,6 @@
-package client
+package omglol
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -12,12 +11,14 @@ func TestListDNSRecords(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	d, err := c.ListDNSRecords(testOwnedDomain)
+	l, err := c.ListDNSRecords(testOwnedDomain)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf("%+v\n", *d)
+	for _, d := range *l {
+		t.Logf(d.ToString() + "\n")
+	}
 }
 
 func TestFilterDNSRecords(t *testing.T) {
@@ -28,13 +29,9 @@ func TestFilterDNSRecords(t *testing.T) {
 	}
 
 	criteria := map[string]interface{}{
-		"ID":        41923511,
-		"Type":      "TXT",
-		"Name":      "testdns.terraform",
-		"Data":      "test=true",
-		"TTL":       300,
-		"CreatedAt": "2023-02-05T21:17:51Z",
-		"UpdatedAt": "2023-02-05T21:17:51Z",
+		"Type": "TXT",
+		"Data": "test=true",
+		"TTL":  300,
 	}
 
 	d, err := c.FilterDNSRecord(testOwnedDomain, criteria)
@@ -43,9 +40,7 @@ func TestFilterDNSRecords(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(fmt.Sprint(*d.ID), *d.Type, *d.Name, *d.Data, *d.CreatedAt)
-
-	t.Logf("%+v\n", *d)
+	t.Logf(d.ToString())
 }
 
 // There is currently no test for the Update method, as it does not work at time of writing, see https://github.com/neatnik/omg.lol/issues/584
@@ -56,21 +51,16 @@ func TestCreateAndDeleteDNSRecord(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	record := map[string]string{
-		"type": "CNAME",
-		"name": "test",
-		"data": "example.com",
-		"ttl":  "300",
-	}
+	record := NewDNSEntry("TXT", "testcreatetodelete"+RunUID, "test=true", 300)
 
-	r, err := c.CreateDNSRecord(testOwnedDomain, record)
+	r, err := c.CreateDNSRecord(testOwnedDomain, *record)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf("%+v\n", r)
+	t.Logf(r.ToString())
 
-	err = c.DeleteDNSRecord(testOwnedDomain, r.Response.ResponseReceived.Data.ID)
+	err = c.DeleteDNSRecord(testOwnedDomain, *r.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -83,35 +73,25 @@ func TestCreateReplaceDeleteDNSRecord(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	record1 := map[string]string{
-		"type": "TXT",
-		"name": "testcreate",
-		"data": "example.com",
-		"ttl":  "300",
-	}
+	record1 := NewDNSEntry("TXT", "testcreate"+RunUID, "test=true", 300)
 
-	record2 := map[string]string{
-		"type": "TXT",
-		"name": "testreplace",
-		"data": "example.com",
-		"ttl":  "300",
-	}
+	record2 := NewDNSEntry("TXT", "testreplace"+RunUID, "test=true", 300)
 
-	create, err := c.CreateDNSRecord(testOwnedDomain, record1)
+	create, err := c.CreateDNSRecord(testOwnedDomain, *record1)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf("%+v\n", create)
+	t.Logf(create.ToString())
 
-	replace, err := c.ReplaceDNSRecord(testOwnedDomain, record2, create.Response.ResponseReceived.Data.ID)
+	replace, err := c.ReplaceDNSRecord(testOwnedDomain, *record2, *create.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf("%+v\n", replace)
+	t.Logf(replace.ToString())
 
-	err = c.DeleteDNSRecord(testOwnedDomain, replace.Response.ResponseReceived.Data.ID)
+	err = c.DeleteDNSRecord(testOwnedDomain, *replace.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}

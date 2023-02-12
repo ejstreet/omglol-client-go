@@ -1,4 +1,4 @@
-package client
+package omglol
 
 import (
 	"encoding/json"
@@ -96,6 +96,16 @@ type AddressDirectory struct {
 	Directory []string `json:"directory"`
 }
 
+// Used to create or modify a DNS record
+type DNSEntry struct {
+	Type     *string `json:"type"`
+	Name     *string `json:"name"`
+	Data     *string `json:"data"`
+	Priority *int    `json:"priority"`
+	TTL      *int    `json:"ttl"`
+}
+
+// Return type for DNS related methods
 type DNSRecord struct {
 	ID        *int    `json:"id"`
 	Type      *string `json:"type"`
@@ -107,40 +117,42 @@ type DNSRecord struct {
 	UpdatedAt *string `json:"updated_at"`
 }
 
-type DNSChangeResponse struct {
+type dnsRecordContent struct {
+	ID        *int    `json:"id"`
+	Type      *string `json:"type"`
+	Name      *string `json:"name"`
+	Content   *string `json:"content"`
+	Priority  *int    `json:"priority"`
+	TTL       *int    `json:"ttl"`
+	CreatedAt *string `json:"created_at"`
+	UpdatedAt *string `json:"updated_at"`
+}
+
+type dnsChangeResponse struct {
 	Request  request `json:"request"`
 	Response struct {
 		Message  string `json:"message"`
 		DataSent struct {
-			Type     string  `json:"type"`
-			Priority *string `json:"priority"`
-			TTL      *string `json:"ttl"`
-			Name     string  `json:"name"`
-			Content  string  `json:"content"`
+			Type     string `json:"type"`
+			Priority *int   `json:"priority"`
+			TTL      *int   `json:"ttl"`
+			Name     string `json:"name"`
+			Content  string `json:"content"`
 		} `json:"data_sent"`
 		ResponseReceived struct {
-			Data struct {
-				ID        int    `json:"id"`
-				Name      string `json:"name"`
-				Content   string `json:"content"`
-				TTL       int    `json:"ttl"`
-				Priority  *int   `json:"priority"`
-				Type      string `json:"type"`
-				CreatedAt string `json:"created_at"`
-				UpdatedAt string `json:"updated_at"`
-			} `json:"data"`
+			Data dnsRecordContent `json:"data"`
 		} `json:"response_received"`
 	} `json:"response"`
 }
 
-type PersistantURL struct {
+type PersistentURL struct {
 	Name    string `json:"name"`
-	Url     string `json:"url"`
+	URL     string `json:"url"`
 	Counter *int   `json:"counter"`
 }
 
-type PersistantURLCreateResponse struct {
+type PersistentURLCreateResponse struct {
 	Message string `json:"message"`
 	Name    string `json:"name"`
-	Url     string `json:"url"`
+	URL     string `json:"url"`
 }

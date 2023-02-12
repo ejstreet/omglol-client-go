@@ -1,50 +1,64 @@
-package client
+package omglol
 
 import (
 	//"bytes"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
-// Create a new PURL. See https://api.omg.lol/#token-post-purls-create-a-new-purl
-// func (c *Client) CreatePersistentURL(domain string, purlName string, url string) (*PersistantURL, error) {
-// 	jsonData, err := json.Marshal(map[string]string{"name": purlName, "url": url})
+// Create a PersistentURL object
+func NewPersistentURL(Name string, URL string, Counter ...*int) *PersistentURL {
+	var counter *int
+	if len(Counter) > 0 {
+		c := Counter[0]
+		counter = c
+	}
 
-// 	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/address/%s/purl", c.HostURL, domain), bytes.NewBuffer([]byte(jsonData)))
+	return &PersistentURL{
+		Name:    Name,
+		URL:     URL,
+		Counter: counter,
+	}
+}
 
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// Returns a string representaion of a PersistentURL
+func (p *PersistentURL) ToString() string {
+	counter := "<nil>"
+	if p.Counter != nil {
+		counter = strconv.Itoa(*p.Counter)
+	}
+	return fmt.Sprintf("Name: %s, URL: %s, Counter: %s", p.Name, p.URL, counter)
+}
 
-// 	body, err := c.doRequest(req)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// Create a new PersistentURL. See https://api.omg.lol/#token-post-purls-create-a-new-purl
+func (c *Client) CreatePersistentURL(domain string, purl PersistentURL) error {
+	jsonData, err := json.Marshal(purl)
 
-// 	var r PersistantURLCreateResponse
-// 	if err := json.Unmarshal(body, &r); err != nil {
-// 		fmt.Printf("Error unmarshalling response: %v\n", err)
-// 		return nil, err
-// 	}
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/address/%s/purl", c.HostURL, domain), bytes.NewBuffer([]byte(jsonData)))
 
-// 	p := PersistantURL {
-// 		Request: r.Request,
-// 	}
-// 	p.Response.Message = r.Response.Message
-// 	p.Response.Purl.Name = r.Response.Name
-// 	p.Response.Purl.Url = r.Response.Url
-// 	p.Response
-// 		Purl    struct {
-// 			Name    string      `json:"name"`
-// 			Url     string      `json:"url"`
-// 			Counter interface{} `json:"counter"`
+	if err != nil {
+		return err
+	}
 
-// 	return &p, nil
-// }
+	body, err := c.doRequest(req)
+	if err != nil {
+		return err
+	}
+
+	var r apiResponse
+	if err := json.Unmarshal(body, &r); err != nil {
+		fmt.Printf("Error unmarshalling response: %v\n", err)
+		return err
+	}
+
+	return nil
+}
 
 // Get a specific PURL. See https://api.omg.lol/#token-get-purls-retrieve-a-specific-purl
-func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistantURL, error) {
+func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistentURL, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/address/%s/purl/%s", c.HostURL, domain, purlName), nil)
 
 	if err != nil {
@@ -56,17 +70,32 @@ func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistantUR
 		return nil, err
 	}
 
-	var p PersistantURL
-	if err := json.Unmarshal(body, &p); err != nil {
+	type getPURLResponse struct {
+		Request struct {
+			StatusCode int  `json:"status_code"`
+			Success    bool `json:"success"`
+		} `json:"request"`
+		Response struct {
+			Message string `json:"message"`
+			PURL    struct {
+				Name    string `json:"name"`
+				URL     string `json:"url"`
+				Counter *int   `json:"counter"`
+			} `json:"purl"`
+		} `json:"response"`
+	}
+
+	var g getPURLResponse
+	if err := json.Unmarshal(body, &g); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
 
-	return &p, nil
+	return NewPersistentURL(g.Response.PURL.Name, g.Response.PURL.URL, g.Response.PURL.Counter), nil
 }
 
 // Retrieve a list of PURLs associated with an address. See https://api.omg.lol/#token-get-purls-retrieve-a-list-of-purls-for-an-address
-func (c *Client) ListPersistentURLs(address string) (*[]PersistantURL, error) {
+func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/address/%s/purls", c.HostURL, address), nil)
 	if err != nil {
 		return nil, err
@@ -77,10 +106,43 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistantURL, error) {
 		return nil, err
 	}
 
-	var p []PersistantURL
-	if err := json.Unmarshal(body, &p); err != nil {
+	type listPURLResponse struct {
+		Request struct {
+			StatusCode int    `json:"status_code"`
+			Success    bool   `json:"success"`
+		} `json:"request"`
+		Response struct {
+			Message string  `json:"message"`
+			PURLs   []struct {
+				Name    string `json:"name"`
+				URL     string `json:"url"`
+				Counter *string `json:"counter"`
+			} `json:"purls"`
+		} `json:"response"`
+	}
+
+	var r listPURLResponse
+	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
+	}
+
+	var p []PersistentURL
+
+	for _, purl := range r.Response.PURLs {
+		var x PersistentURL
+
+		x.Name = purl.Name
+		x.URL = purl.URL
+		
+		if purl.Counter == nil {
+			x.Counter = nil
+		} else {
+			p, _ := strconv.Atoi(*purl.Counter)
+			x.Counter = &p
+		}
+
+		p = append(p, x)
 	}
 
 	return &p, nil

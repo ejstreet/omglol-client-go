@@ -1,4 +1,4 @@
-package client
+package omglol
 
 import (
 	"fmt"
@@ -69,5 +69,3 @@ func (c *Client) doRequest(req *http.Request) ([]byte, error) {
 
 	return body, nil
 }
-
-
