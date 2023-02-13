@@ -1,7 +1,7 @@
 [![Tests](https://github.com/ejstreet/omglol-client-go/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/ejstreet/omglol-client-go/actions/workflows/test.yml)
 [![GoDoc](https://pkg.go.dev/badge/github.com/ejstreet/omglol-client-go?status.svg)](https://pkg.go.dev/github.com/ejstreet/omglol-client-go?tab=doc)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/ejstreet/omglol-client-go?sort=semver)
-![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ejstreet/omglol-client-go)
+[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/ejstreet/omglol-client-go?sort=semver)](https://github.com/ejstreet/omglol-client-go/releases)
+[![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ejstreet/omglol-client-go)](https://github.com/ejstreet/omglol-client-go/blob/main/go.mod#L3)
 # omglol-client-go
 API client library for omg.lol written in Go
 
