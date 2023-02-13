@@ -1,8 +1,9 @@
 [![Tests](https://github.com/ejstreet/omglol-client-go/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/ejstreet/omglol-client-go/actions/workflows/test.yml)
+[![GoDoc](https://pkg.go.dev/badge/github.com/ejstreet/omglol-client-go?status.svg)](https://pkg.go.dev/github.com/ejstreet/omglol-client-go?tab=doc)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/ejstreet/omglol-client-go?sort=semver)
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/ejstreet/omglol-client-go)
 # omglol-client-go
 API client library for omg.lol written in Go
-
-Package available at [pkg.go.dev](https://pkg.go.dev/github.com/ejstreet/omglol-client-go)
 
 > **Warning**
 > The omg.lol API is still in development, and endpoints are subject to change. This may cause the client to break unexpectedly.
