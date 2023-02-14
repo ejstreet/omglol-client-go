@@ -5,7 +5,7 @@ import (
 )
 
 func TestListDNSRecords(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -22,7 +22,7 @@ func TestListDNSRecords(t *testing.T) {
 }
 
 func TestFilterDNSRecords(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -45,7 +45,7 @@ func TestFilterDNSRecords(t *testing.T) {
 
 // There is currently no test for the Update method, as it does not work at time of writing, see https://github.com/neatnik/omg.lol/issues/584
 func TestCreateAndDeleteDNSRecord(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -67,7 +67,7 @@ func TestCreateAndDeleteDNSRecord(t *testing.T) {
 }
 
 func TestCreateReplaceDeleteDNSRecord(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())

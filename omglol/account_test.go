@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetAccountInfo(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -21,7 +21,7 @@ func TestGetAccountInfo(t *testing.T) {
 }
 
 func TestGetAddresses(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -36,7 +36,7 @@ func TestGetAddresses(t *testing.T) {
 }
 
 func TestSetAccountName(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -48,7 +48,7 @@ func TestSetAccountName(t *testing.T) {
 }
 
 func TestGetAccountName(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -67,7 +67,7 @@ func TestGetAccountName(t *testing.T) {
 }
 
 func TestGetActiveSessions(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -89,7 +89,7 @@ func TestDeleteActiveSession(t *testing.T) {
 		t.Skip()
 	}
 
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -101,7 +101,7 @@ func TestDeleteActiveSession(t *testing.T) {
 }
 
 func TestGetAccountSettings(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -116,7 +116,7 @@ func TestGetAccountSettings(t *testing.T) {
 }
 
 func TestSetAccountSettings(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())

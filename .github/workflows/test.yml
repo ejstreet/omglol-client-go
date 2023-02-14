@@ -17,6 +17,7 @@ jobs:
       - name: Test
         env:
           OMGLOL_API_KEY: ${{ secrets.OMGLOL_API_KEY }}
+          OMGLOL_API_HOST: "https://api.omg.lol"
           OMGLOL_USERNAME: ${{ secrets.OMGLOL_USERNAME }}
           OMGLOL_USER_EMAIL: ${{ secrets.OMGLOL_USER_EMAIL }}
           OMGLOL_TEST_OWNED_DOMAIN: ${{ vars.OMGLOL_TEST_OWNED_DOMAIN }}

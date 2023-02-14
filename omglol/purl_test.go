@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetPersistentURL(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -21,7 +21,7 @@ func TestGetPersistentURL(t *testing.T) {
 }
 
 func TestListPersistentURLs(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -38,7 +38,7 @@ func TestListPersistentURLs(t *testing.T) {
 }
 
 func TestCreateAndDeletePersistentURL(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())

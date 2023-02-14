@@ -34,10 +34,10 @@ type Account struct {
 	Email   string `json:"email,omitempty"`
 	Name    string `json:"name,omitempty"`
 	Created struct {
-		UnixEpochTime string `json:"unix_epoch_time,omitempty"`
-		Iso8601Time   string `json:"iso_8601_time,omitempty"`
-		Rfc2822Time   string `json:"rfc_2822_time,omitempty"`
-		RelativeTime  string `json:"relative_time,omitempty"`
+		UnixEpochTime interface{} `json:"unix_epoch_time,omitempty"`
+		Iso8601Time   string      `json:"iso_8601_time,omitempty"`
+		Rfc2822Time   string      `json:"rfc_2822_time,omitempty"`
+		RelativeTime  string      `json:"relative_time,omitempty"`
 	} `json:"created,omitempty"`
 	APIKey   string          `json:"api_key,omitempty"`
 	Settings AccountSettings `json:"settings,omitempty"`

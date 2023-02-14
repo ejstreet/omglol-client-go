@@ -5,7 +5,7 @@ import (
 )
 
 func TestGetAddressAvailability(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -20,7 +20,7 @@ func TestGetAddressAvailability(t *testing.T) {
 }
 
 func TestGetAddressExpiration(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -35,7 +35,7 @@ func TestGetAddressExpiration(t *testing.T) {
 }
 
 func TestGetAddressInfo(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
@@ -50,7 +50,7 @@ func TestGetAddressInfo(t *testing.T) {
 }
 
 func TestGetAddressDirectory(t *testing.T) {
-	c, err := NewClient(testEmail, testKey)
+	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
 		t.Errorf(err.Error())
