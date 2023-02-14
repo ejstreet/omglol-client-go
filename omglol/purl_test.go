@@ -1,7 +1,6 @@
 package omglol
 
 import (
-	//	"fmt"
 	"testing"
 )
 
@@ -46,7 +45,7 @@ func TestCreateAndDeletePersistentURL(t *testing.T) {
 
 	name := "test" + RunUID
 
-	p := NewPersistentURL(name, "https://example.com")
+	p := NewPersistentURL(name, "https://example.com", false)
 
 	err = c.CreatePersistentURL(testOwnedDomain, *p)
 	if err != nil {

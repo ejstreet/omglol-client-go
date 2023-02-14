@@ -29,6 +29,7 @@ func TestFilterDNSRecords(t *testing.T) {
 	}
 
 	criteria := map[string]interface{}{
+		"Name": "testdns.terraform",
 		"Type": "TXT",
 		"Data": "test=true",
 		"TTL":  300,

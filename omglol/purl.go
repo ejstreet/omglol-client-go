@@ -9,7 +9,7 @@ import (
 )
 
 // Create a PersistentURL object
-func NewPersistentURL(Name string, URL string, Counter ...*int) *PersistentURL {
+func NewPersistentURL(Name string, URL string, Listed bool, Counter ...*int) *PersistentURL {
 	var counter *int
 	if len(Counter) > 0 {
 		c := Counter[0]
@@ -19,6 +19,7 @@ func NewPersistentURL(Name string, URL string, Counter ...*int) *PersistentURL {
 	return &PersistentURL{
 		Name:    Name,
 		URL:     URL,
+		Listed:  Listed,
 		Counter: counter,
 	}
 }
@@ -29,7 +30,7 @@ func (p *PersistentURL) ToString() string {
 	if p.Counter != nil {
 		counter = strconv.Itoa(*p.Counter)
 	}
-	return fmt.Sprintf("Name: %s, URL: %s, Counter: %s", p.Name, p.URL, counter)
+	return fmt.Sprintf("Name: %s, URL: %s, Listed: %t, Counter: %s", p.Name, p.URL, p.Listed, counter)
 }
 
 // Create a new PersistentURL. See https://api.omg.lol/#token-post-purls-create-a-new-purl
@@ -80,6 +81,7 @@ func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistentUR
 				Name    string `json:"name"`
 				URL     string `json:"url"`
 				Counter *int   `json:"counter"`
+				Listed  bool   `json:"listed"`
 			} `json:"purl"`
 		} `json:"response"`
 	}
@@ -90,7 +92,7 @@ func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistentUR
 		return nil, err
 	}
 
-	return NewPersistentURL(g.Response.PURL.Name, g.Response.PURL.URL, g.Response.PURL.Counter), nil
+	return NewPersistentURL(g.Response.PURL.Name, g.Response.PURL.URL, g.Response.PURL.Listed, g.Response.PURL.Counter), nil
 }
 
 // Retrieve a list of PURLs associated with an address. See https://api.omg.lol/#token-get-purls-retrieve-a-list-of-purls-for-an-address
@@ -106,17 +108,10 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 	}
 
 	type listPURLResponse struct {
-		Request struct {
-			StatusCode int    `json:"status_code"`
-			Success    bool   `json:"success"`
-		} `json:"request"`
+		Request  request `json:"request"`
 		Response struct {
-			Message string  `json:"message"`
-			PURLs   []struct {
-				Name    string `json:"name"`
-				URL     string `json:"url"`
-				Counter *string `json:"counter"`
-			} `json:"purls"`
+			Message string          `json:"message"`
+			PURLs   []PersistentURL `json:"purls"`
 		} `json:"response"`
 	}
 
@@ -126,25 +121,7 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 		return nil, err
 	}
 
-	var p []PersistentURL
-
-	for _, purl := range r.Response.PURLs {
-		var x PersistentURL
-
-		x.Name = purl.Name
-		x.URL = purl.URL
-		
-		if purl.Counter == nil {
-			x.Counter = nil
-		} else {
-			p, _ := strconv.Atoi(*purl.Counter)
-			x.Counter = &p
-		}
-
-		p = append(p, x)
-	}
-
-	return &p, nil
+	return &r.Response.PURLs, nil
 }
 
 // Permanently delete a PURL. See https://api.omg.lol/#token-delete-purls-delete-a-purl

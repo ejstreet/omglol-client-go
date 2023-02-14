@@ -23,17 +23,8 @@ func (c *Client) ListDNSRecords(address string) (*[]DNSRecord, error) {
 	type recordsResponse struct {
 		Request  request `json:"request"`
 		Response struct {
-			Message string `json:"message"`
-			DNS     []struct {
-				ID        string  `json:"id"`
-				Type      string  `json:"type"`
-				Name      string  `json:"name"`
-				Data      string  `json:"data"`
-				Priority  *string `json:"priority"`
-				TTL       string  `json:"ttl"`
-				CreatedAt string  `json:"created_at"`
-				UpdatedAt string  `json:"updated_at"`
-			} `json:"dns"`
+			Message string      `json:"message"`
+			DNS     []DNSRecord `json:"dns"`
 		} `json:"response"`
 	}
 
@@ -43,35 +34,7 @@ func (c *Client) ListDNSRecords(address string) (*[]DNSRecord, error) {
 		return nil, err
 	}
 
-	// Some type conversion is required, as the API is a little inconsistent with its return types
-
-	var d []DNSRecord
-
-	for _, record := range r.Response.DNS {
-		var x DNSRecord
-
-		x.Type = &record.Type
-		x.Name = &record.Name
-		x.Data = &record.Data
-		x.CreatedAt = &record.CreatedAt
-		x.UpdatedAt = &record.UpdatedAt
-
-		id, _ := strconv.Atoi(record.ID)
-		x.ID = &id
-		ttl, _ := strconv.Atoi(record.TTL)
-		x.TTL = &ttl
-
-		if record.Priority == nil {
-			x.Priority = nil
-		} else {
-			p, _ := strconv.Atoi(*record.Priority)
-			x.Priority = &p
-		}
-
-		d = append(d, x)
-	}
-
-	return &d, nil
+	return &r.Response.DNS, nil
 }
 
 // Find a single DNS record from its attributes.
