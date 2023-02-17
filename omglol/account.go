@@ -99,7 +99,7 @@ func (c *Client) SetAccountName(name string) error {
 
 	body, err := c.doRequest(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("Sent: %s, Error: %w", jsonData, err)
 	}
 
 	var r apiResponse
@@ -198,7 +198,7 @@ func (c *Client) SetAccountSettings(settings map[string]string) error {
 
 	body, err := c.doRequest(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("Sent: %s, Error: %w", jsonData, err)
 	}
 
 	var r apiResponse

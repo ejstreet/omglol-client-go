@@ -29,8 +29,8 @@ func TestFilterDNSRecords(t *testing.T) {
 	}
 
 	criteria := map[string]interface{}{
+		"ID":   42182676,
 		"Type": "TXT",
-		"Data": "test=true",
 		"TTL":  300,
 	}
 

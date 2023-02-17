@@ -44,7 +44,7 @@ func (c *Client) CreatePersistentURL(domain string, purl PersistentURL) error {
 
 	body, err := c.doRequest(req)
 	if err != nil {
-		return err
+		return fmt.Errorf("Sent: %s, Error: %w", jsonData, err)
 	}
 
 	var r apiResponse
@@ -107,14 +107,14 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 
 	type listPURLResponse struct {
 		Request struct {
-			StatusCode int    `json:"status_code"`
-			Success    bool   `json:"success"`
+			StatusCode int  `json:"status_code"`
+			Success    bool `json:"success"`
 		} `json:"request"`
 		Response struct {
-			Message string  `json:"message"`
+			Message string `json:"message"`
 			PURLs   []struct {
-				Name    string `json:"name"`
-				URL     string `json:"url"`
+				Name    string  `json:"name"`
+				URL     string  `json:"url"`
 				Counter *string `json:"counter"`
 			} `json:"purls"`
 		} `json:"response"`
@@ -133,7 +133,7 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 
 		x.Name = purl.Name
 		x.URL = purl.URL
-		
+
 		if purl.Counter == nil {
 			x.Counter = nil
 		} else {

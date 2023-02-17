@@ -48,27 +48,17 @@ func (c *Client) ListDNSRecords(address string) (*[]DNSRecord, error) {
 	var d []DNSRecord
 
 	for _, record := range r.Response.DNS {
-		var x DNSRecord
-
-		x.Type = &record.Type
-		x.Name = &record.Name
-		x.Data = &record.Data
-		x.CreatedAt = &record.CreatedAt
-		x.UpdatedAt = &record.UpdatedAt
-
 		id, _ := strconv.Atoi(record.ID)
-		x.ID = &id
 		ttl, _ := strconv.Atoi(record.TTL)
-		x.TTL = &ttl
 
-		if record.Priority == nil {
-			x.Priority = nil
-		} else {
-			p, _ := strconv.Atoi(*record.Priority)
-			x.Priority = &p
+		var p int
+		if record.Priority != nil {
+			p, _ = strconv.Atoi(*record.Priority)
 		}
 
-		d = append(d, x)
+		x := newDNSRecord(id, ttl, record.Type, record.Name, record.Data, record.CreatedAt, record.UpdatedAt, &p)
+
+		d = append(d, *x)
 	}
 
 	return &d, nil
@@ -135,9 +125,9 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 			default:
 				return nil, fmt.Errorf("Invalid filter criteria key: %s", key)
 			}
-			if !match {
-				break
-			}
+			// if !match {
+			// 	break
+			// }
 		}
 		if match {
 			matchedRecord = record
@@ -153,7 +143,7 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 	return &matchedRecord, nil
 }
 
-func NewDNSEntry(Type string, Name string, Data string, TTL int, Priority ...int) *DNSEntry {
+func NewDNSEntry(Type, Name, Data string, TTL int, Priority ...int) *DNSEntry {
 	var priority *int
 	if len(Priority) > 0 {
 		p := Priority[0]
@@ -165,6 +155,19 @@ func NewDNSEntry(Type string, Name string, Data string, TTL int, Priority ...int
 		Data:     &Data,
 		TTL:      &TTL,
 		Priority: priority,
+	}
+}
+
+func newDNSRecord(id, ttl int, typ, name, data, createdAt, updatedAt string, priority *int) *DNSRecord {
+	return &DNSRecord{
+		ID:        &id,
+		Type:      &typ,
+		Name:      &name,
+		Data:      &data,
+		Priority:  priority,
+		TTL:       &ttl,
+		CreatedAt: &createdAt,
+		UpdatedAt: &updatedAt,
 	}
 }
 
@@ -206,7 +209,7 @@ func (c *Client) CreateDNSRecord(domain string, record DNSEntry) (*DNSRecord, er
 
 	body, err := c.doRequest(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Sent: %s, Error: %w", jsonData, err)
 	}
 
 	var r dnsChangeResponse
@@ -232,7 +235,7 @@ func (c *Client) UpdateDNSRecord(domain string, record DNSEntry, record_id int) 
 
 	body, err := c.doRequest(req)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Sent: %s, Error: %w", jsonData, err)
 	}
 
 	var r dnsChangeResponse
