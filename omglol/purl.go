@@ -9,7 +9,7 @@ import (
 )
 
 // Create a PersistentURL object
-func NewPersistentURL(Name string, URL string, Counter ...*int) *PersistentURL {
+func NewPersistentURL(Name, URL string, listed bool, Counter ...*int) *PersistentURL {
 	var counter *int
 	if len(Counter) > 0 {
 		c := Counter[0]
@@ -19,6 +19,7 @@ func NewPersistentURL(Name string, URL string, Counter ...*int) *PersistentURL {
 	return &PersistentURL{
 		Name:    Name,
 		URL:     URL,
+		Listed:  &listed,
 		Counter: counter,
 	}
 }
@@ -34,6 +35,10 @@ func (p *PersistentURL) ToString() string {
 
 // Create a new PersistentURL. See https://api.omg.lol/#token-post-purls-create-a-new-purl
 func (c *Client) CreatePersistentURL(domain string, purl PersistentURL) error {
+	if !*purl.Listed {
+		purl.Listed = nil
+	}
+
 	jsonData, err := json.Marshal(purl)
 
 	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/address/%s/purl", c.HostURL, domain), bytes.NewBuffer([]byte(jsonData)))
@@ -77,9 +82,10 @@ func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistentUR
 		Response struct {
 			Message string `json:"message"`
 			PURL    struct {
-				Name    string `json:"name"`
-				URL     string `json:"url"`
-				Counter *int   `json:"counter"`
+				Name    string  `json:"name"`
+				URL     string  `json:"url"`
+				Counter *string `json:"counter"`
+				Listed  *string `json:"listed"`
 			} `json:"purl"`
 		} `json:"response"`
 	}
@@ -90,7 +96,24 @@ func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistentUR
 		return nil, err
 	}
 
-	return NewPersistentURL(g.Response.PURL.Name, g.Response.PURL.URL, g.Response.PURL.Counter), nil
+	var counter int
+	if g.Response.PURL.Counter != nil {
+		counter, err = strconv.Atoi(*g.Response.PURL.Counter)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		counter = 0
+	}
+
+	var listed bool
+	if g.Response.PURL.Listed != nil {
+		listed = true
+	} else {
+		listed = false
+	}
+
+	return NewPersistentURL(g.Response.PURL.Name, g.Response.PURL.URL, listed, &counter), nil
 }
 
 // Retrieve a list of PURLs associated with an address. See https://api.omg.lol/#token-get-purls-retrieve-a-list-of-purls-for-an-address

@@ -149,10 +149,5 @@ type PersistentURL struct {
 	Name    string `json:"name"`
 	URL     string `json:"url"`
 	Counter *int   `json:"counter"`
-}
-
-type PersistentURLCreateResponse struct {
-	Message string `json:"message"`
-	Name    string `json:"name"`
-	URL     string `json:"url"`
+	Listed  *bool  `json:"listed"`
 }
