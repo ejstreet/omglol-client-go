@@ -8,6 +8,29 @@ API client library for omg.lol written in Go
 > **Warning**
 > The omg.lol API is still in development, and endpoints are subject to change. This may cause the client to break unexpectedly.
 
+## Usage
+To install this module:
+```bash
+go get github.com/ejstreet/omglol-client-go@latest
+```
+To import:
+```go
+import (
+  "github.com/ejstreet/omglol-client-go/omglol"
+ )
+ ```
+ 
+ Create a new client:
+ ```go
+ c, err := omglol.NewClient(email, api_key)
+ ```
+ 
+ Use a method:
+ ```go
+ a, err := c.GetAccountInfo()
+ ```
+ See test files for further examples.
+
 ## Supported Features
 This project is a work-in-progress, see the following table for supported features:
 
