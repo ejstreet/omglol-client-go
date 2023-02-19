@@ -28,19 +28,41 @@ func TestFilterDNSRecords(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	criteria := map[string]interface{}{
-		"ID":   41923511,
-		"Type": "TXT",
-		"TTL":  300,
+	// TXT Record
+	criteria1 := map[string]any{
+		"ID":       41923511,
+		"Type":     "TXT",
+		"TTL":      300,
+		"Priority": nil,
 	}
 
-	d, err := c.FilterDNSRecord(testOwnedDomain, criteria)
+	d1, err := c.FilterDNSRecord(testOwnedDomain, criteria1)
 
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(d.ToString())
+	t.Logf(d1.ToString())
+
+	// MX Record
+	criteria2 := map[string]any{
+		"ID":       int64(42197707),
+		"Priority": int64(20),
+	}
+
+	d2, err := c.FilterDNSRecord(testOwnedDomain, criteria2)
+
+	t.Logf(d2.ToString())
+
+	// Apex Record 
+	criteria3 := map[string]any{
+		"ID": 42203377,
+		"Name": "@",
+	}
+
+	d3, err := c.FilterDNSRecord(testOwnedDomain, criteria3)
+
+	t.Logf(d3.ToString())
 }
 
 // There is currently no test for the Update method, as it does not work at time of writing, see https://github.com/neatnik/omg.lol/issues/584

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // Get a list of all of your DNS records for an address. See https://api.omg.lol/#token-get-dns-retrieve-dns-records-for-an-address
@@ -48,15 +49,19 @@ func (c *Client) ListDNSRecords(address string) (*[]DNSRecord, error) {
 	var d []DNSRecord
 
 	for _, record := range r.Response.DNS {
-		id, _ := strconv.Atoi(record.ID)
-		ttl, _ := strconv.Atoi(record.TTL)
+		id_int, _ := strconv.Atoi(record.ID)
+		id := int64(id_int)
+		ttl_int, _ := strconv.Atoi(record.TTL)
+		ttl := int64(ttl_int)
 
-		var p int
+		var p *int64
 		if record.Priority != nil {
-			p, _ = strconv.Atoi(*record.Priority)
+			p_int, _ := strconv.Atoi(*record.Priority)
+			p_int64 := int64(p_int)
+			p = &p_int64
 		}
 
-		x := newDNSRecord(id, ttl, record.Type, record.Name, record.Data, record.CreatedAt, record.UpdatedAt, &p)
+		x := newDNSRecord(id, ttl, record.Type, record.Name, record.Data, record.CreatedAt, record.UpdatedAt, p)
 
 		d = append(d, *x)
 	}
@@ -78,7 +83,17 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 		for key, value := range filterCriteria {
 			switch key {
 			case "ID":
-				if *record.ID != value.(int) {
+				var id int64
+				switch v := value.(type) {
+				case int:
+					id = int64(v)
+				case int64:
+					id = v
+				default:
+					match = false
+					break
+				}
+				if id != *record.ID {
 					match = false
 					break
 				}
@@ -88,7 +103,10 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 					break
 				}
 			case "Name":
-				if *record.Name != value.(string) {
+				if strings.Contains(*record.Name, ".") && *record.Name != value.(string) {
+					match = false
+					break
+				} else if !strings.Contains(*record.Name, ".") && "@" != value.(string) {
 					match = false
 					break
 				}
@@ -98,17 +116,38 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 					break
 				}
 			case "Priority":
-				priority, ok := value.(*int)
-				if !ok {
-					match = false
-					break
-				}
-				if record.Priority != priority {
+				switch v := value.(type) {
+				case int:
+					if record.Priority != nil && *record.Priority != int64(v) {
+						match = false
+						break
+					}
+				case int64:
+					if record.Priority != nil && *record.Priority != v {
+						match = false
+						break
+					}
+				case nil:
+					if record.Priority != nil {
+						match = false
+						break
+					}
+				default:
 					match = false
 					break
 				}
 			case "TTL":
-				if *record.TTL != value.(int) {
+				var ttl int64
+				switch v := value.(type) {
+				case int:
+					ttl = int64(v)
+				case int64:
+					ttl = v
+				default:
+					match = false
+					break
+				}
+				if ttl != *record.TTL {
 					match = false
 					break
 				}
@@ -125,9 +164,6 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 			default:
 				return nil, fmt.Errorf("Invalid filter criteria key: %s", key)
 			}
-			// if !match {
-			// 	break
-			// }
 		}
 		if match {
 			matchedRecord = record
@@ -143,8 +179,8 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 	return &matchedRecord, nil
 }
 
-func NewDNSEntry(Type, Name, Data string, TTL int, Priority ...int) *DNSEntry {
-	var priority *int
+func NewDNSEntry(Type, Name, Data string, TTL int64, Priority ...int64) *DNSEntry {
+	var priority *int64
 	if len(Priority) > 0 {
 		p := Priority[0]
 		priority = &p
@@ -158,7 +194,7 @@ func NewDNSEntry(Type, Name, Data string, TTL int, Priority ...int) *DNSEntry {
 	}
 }
 
-func newDNSRecord(id, ttl int, typ, name, data, createdAt, updatedAt string, priority *int) *DNSRecord {
+func newDNSRecord(id, ttl int64, typ, name, data, createdAt, updatedAt string, priority *int64) *DNSRecord {
 	return &DNSRecord{
 		ID:        &id,
 		Type:      &typ,
@@ -192,7 +228,7 @@ func (d *DNSRecord) ToString() string {
 
 	priority := "<nil>"
 	if d.Priority != nil {
-		priority = strconv.Itoa(*d.Priority)
+		priority = strconv.Itoa(int(*d.Priority))
 	}
 	return fmt.Sprintf("ID: %d, Type: %s, Name: %s, Data: %s, Priority: %s, TTL: %d, CreatedAt: %s, UpdatedAt: %s", *d.ID, *d.Type, *d.Name, *d.Data, priority, *d.TTL, *d.CreatedAt, *d.UpdatedAt)
 }
@@ -224,7 +260,7 @@ func (c *Client) CreateDNSRecord(domain string, record DNSEntry) (*DNSRecord, er
 // Update an existing DNS record. See https://api.omg.lol/#token-patch-dns-edit-an-existing-dns-record
 // Note this method does not work at time of writing due to an API bug, see https://github.com/neatnik/omg.lol/issues/584
 // Suggested workaround is to use the Replace function instead, which uses the same interface.
-func (c *Client) UpdateDNSRecord(domain string, record DNSEntry, record_id int) (*DNSRecord, error) {
+func (c *Client) UpdateDNSRecord(domain string, record DNSEntry, record_id int64) (*DNSRecord, error) {
 	jsonData, err := json.Marshal(record)
 
 	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/address/%s/dns/%d", c.HostURL, domain, record_id), bytes.NewBuffer([]byte(jsonData)))
@@ -248,7 +284,7 @@ func (c *Client) UpdateDNSRecord(domain string, record DNSEntry, record_id int) 
 }
 
 // Delete a DNS record. See https://api.omg.lol/#token-delete-dns-delete-a-dns-record
-func (c *Client) DeleteDNSRecord(domain string, record_id int) error {
+func (c *Client) DeleteDNSRecord(domain string, record_id int64) error {
 	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/address/%s/dns/%d", c.HostURL, domain, record_id), nil)
 
 	if err != nil {
@@ -270,7 +306,7 @@ func (c *Client) DeleteDNSRecord(domain string, record_id int) error {
 }
 
 // Delete a record with a given ID, then Create a new one using the provided values.
-func (c *Client) ReplaceDNSRecord(domain string, record DNSEntry, record_id int) (*DNSRecord, error) {
+func (c *Client) ReplaceDNSRecord(domain string, record DNSEntry, record_id int64) (*DNSRecord, error) {
 	err := c.DeleteDNSRecord(domain, record_id)
 	if err != nil {
 		return nil, err

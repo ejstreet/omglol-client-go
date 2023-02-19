@@ -5,8 +5,8 @@ import (
 )
 
 type request struct {
-	StatusCode int  `json:"status_code"`
-	Success    bool `json:"success"`
+	StatusCode int64 `json:"status_code"`
+	Success    bool  `json:"success"`
 }
 
 type apiResponse struct {
@@ -101,29 +101,29 @@ type DNSEntry struct {
 	Type     *string `json:"type"`
 	Name     *string `json:"name"`
 	Data     *string `json:"data"`
-	Priority *int    `json:"priority"`
-	TTL      *int    `json:"ttl"`
+	Priority *int64  `json:"priority"`
+	TTL      *int64  `json:"ttl"`
 }
 
 // Return type for DNS related methods
 type DNSRecord struct {
-	ID        *int    `json:"id"`
+	ID        *int64  `json:"id"`
 	Type      *string `json:"type"`
 	Name      *string `json:"name"`
 	Data      *string `json:"data"`
-	Priority  *int    `json:"priority"`
-	TTL       *int    `json:"ttl"`
+	Priority  *int64  `json:"priority"`
+	TTL       *int64  `json:"ttl"`
 	CreatedAt *string `json:"created_at"`
 	UpdatedAt *string `json:"updated_at"`
 }
 
 type dnsRecordContent struct {
-	ID        *int    `json:"id"`
+	ID        *int64  `json:"id"`
 	Type      *string `json:"type"`
 	Name      *string `json:"name"`
 	Content   *string `json:"content"`
-	Priority  *int    `json:"priority"`
-	TTL       *int    `json:"ttl"`
+	Priority  *int64  `json:"priority"`
+	TTL       *int64  `json:"ttl"`
 	CreatedAt *string `json:"created_at"`
 	UpdatedAt *string `json:"updated_at"`
 }
@@ -134,8 +134,8 @@ type dnsChangeResponse struct {
 		Message  string `json:"message"`
 		DataSent struct {
 			Type     string `json:"type"`
-			Priority *int   `json:"priority"`
-			TTL      *int   `json:"ttl"`
+			Priority *int64 `json:"priority"`
+			TTL      *int64 `json:"ttl"`
 			Name     string `json:"name"`
 			Content  string `json:"content"`
 		} `json:"data_sent"`
@@ -148,6 +148,6 @@ type dnsChangeResponse struct {
 type PersistentURL struct {
 	Name    string `json:"name"`
 	URL     string `json:"url"`
-	Counter *int   `json:"counter"`
+	Counter *int64 `json:"counter"`
 	Listed  *bool  `json:"listed"`
 }

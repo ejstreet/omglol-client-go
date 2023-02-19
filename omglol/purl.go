@@ -9,8 +9,8 @@ import (
 )
 
 // Create a PersistentURL object
-func NewPersistentURL(Name, URL string, listed bool, Counter ...*int) *PersistentURL {
-	var counter *int
+func NewPersistentURL(Name, URL string, listed bool, Counter ...*int64) *PersistentURL {
+	var counter *int64
 	if len(Counter) > 0 {
 		c := Counter[0]
 		counter = c
@@ -28,7 +28,7 @@ func NewPersistentURL(Name, URL string, listed bool, Counter ...*int) *Persisten
 func (p *PersistentURL) ToString() string {
 	counter := "<nil>"
 	if p.Counter != nil {
-		counter = strconv.Itoa(*p.Counter)
+		counter = strconv.Itoa(int(*p.Counter))
 	}
 	return fmt.Sprintf("Name: %s, URL: %s, Counter: %s", p.Name, p.URL, counter)
 }
@@ -76,8 +76,8 @@ func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistentUR
 
 	type getPURLResponse struct {
 		Request struct {
-			StatusCode int  `json:"status_code"`
-			Success    bool `json:"success"`
+			StatusCode int64 `json:"status_code"`
+			Success    bool  `json:"success"`
 		} `json:"request"`
 		Response struct {
 			Message string `json:"message"`
@@ -96,12 +96,13 @@ func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistentUR
 		return nil, err
 	}
 
-	var counter int
+	var counter int64
 	if g.Response.PURL.Counter != nil {
-		counter, err = strconv.Atoi(*g.Response.PURL.Counter)
+		counter_int, err := strconv.Atoi(*g.Response.PURL.Counter)
 		if err != nil {
 			return nil, err
 		}
+		counter = int64(counter_int)
 	} else {
 		counter = 0
 	}
@@ -130,8 +131,8 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 
 	type listPURLResponse struct {
 		Request struct {
-			StatusCode int  `json:"status_code"`
-			Success    bool `json:"success"`
+			StatusCode int64 `json:"status_code"`
+			Success    bool  `json:"success"`
 		} `json:"request"`
 		Response struct {
 			Message string `json:"message"`
@@ -160,8 +161,9 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 		if purl.Counter == nil {
 			x.Counter = nil
 		} else {
-			p, _ := strconv.Atoi(*purl.Counter)
-			x.Counter = &p
+			counter_int, _ := strconv.Atoi(*purl.Counter)
+			counter := int64(counter_int)
+			x.Counter = &counter
 		}
 
 		p = append(p, x)
