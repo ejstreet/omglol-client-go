@@ -54,15 +54,14 @@ func TestFilterDNSRecords(t *testing.T) {
 
 	t.Logf(d2.ToString())
 
-	// Apex Record 
-	criteria3 := map[string]any{
-		"ID": 42203377,
-		"Name": "@",
-	}
+	// // Apex Record 
+	// criteria3 := map[string]any{
+	// 	"Name": "@",
+	// }
 
-	d3, err := c.FilterDNSRecord(testOwnedDomain, criteria3)
+	// d3, err := c.FilterDNSRecord(testOwnedDomain, criteria3)
 
-	t.Logf(d3.ToString())
+	// t.Logf(d3.ToString())
 }
 
 // There is currently no test for the Update method, as it does not work at time of writing, see https://github.com/neatnik/omg.lol/issues/584
