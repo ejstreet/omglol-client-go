@@ -139,7 +139,8 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 			PURLs   []struct {
 				Name    string  `json:"name"`
 				URL     string  `json:"url"`
-				Counter *string `json:"counter"`
+				Counter *int64  `json:"counter"`
+				Listed  *int64 `json:"listed"`
 			} `json:"purls"`
 		} `json:"response"`
 	}
@@ -159,11 +160,10 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 		x.URL = purl.URL
 
 		if purl.Counter == nil {
-			x.Counter = nil
-		} else {
-			counter_int, _ := strconv.Atoi(*purl.Counter)
-			counter := int64(counter_int)
+			counter := int64(0)
 			x.Counter = &counter
+		} else {
+			x.Counter = purl.Counter
 		}
 
 		p = append(p, x)

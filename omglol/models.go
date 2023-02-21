@@ -16,7 +16,7 @@ type apiResponse struct {
 
 type Registration struct {
 	Message       string `json:"message,omitempty"`
-	UnixEpochTime string `json:"unix_epoch_time,omitempty"`
+	UnixEpochTime int64  `json:"unix_epoch_time,omitempty"`
 	Iso8601Time   string `json:"iso_8601_time,omitempty"`
 	Rfc2822Time   string `json:"rfc_2822_time,omitempty"`
 	RelativeTime  string `json:"relative_time,omitempty"`
@@ -34,7 +34,7 @@ type Account struct {
 	Email   string `json:"email,omitempty"`
 	Name    string `json:"name,omitempty"`
 	Created struct {
-		UnixEpochTime string `json:"unix_epoch_time,omitempty"`
+		UnixEpochTime int64  `json:"unix_epoch_time,omitempty"`
 		Iso8601Time   string `json:"iso_8601_time,omitempty"`
 		Rfc2822Time   string `json:"rfc_2822_time,omitempty"`
 		RelativeTime  string `json:"relative_time,omitempty"`
@@ -47,8 +47,8 @@ type ActiveSession struct {
 	SessionID string `json:"session_id"`
 	UserAgent string `json:"user_agent"`
 	CreatedIP string `json:"created_ip"`
-	CreatedOn string `json:"created_on"`
-	ExpiresOn string `json:"expires_on"`
+	CreatedOn int64  `json:"created_on"`
+	ExpiresOn int64  `json:"expires_on"`
 }
 
 type Address struct {
@@ -72,7 +72,7 @@ type AddressExpiration struct {
 	Message       string `json:"message,omitempty"`
 	Expired       bool   `json:"expired,omitempty"`
 	WillExpire    bool   `json:"will_expire,omitempty"`
-	UnixEpochTime string `json:"unix_epoch_time,omitempty"`
+	UnixEpochTime int64  `json:"unix_epoch_time,omitempty"`
 	Iso8601Time   string `json:"iso_8601_time,omitempty"`
 	Rfc2822Time   string `json:"rfc_2822_time,omitempty"`
 	RelativeTime  string `json:"relative_time,omitempty"`

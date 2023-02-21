@@ -1,7 +1,6 @@
 package omglol
 
 import (
-	//	"fmt"
 	"testing"
 )
 
