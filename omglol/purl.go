@@ -85,7 +85,7 @@ func (c *Client) GetPersistentURL(domain string, purlName string) (*PersistentUR
 				Name    string  `json:"name"`
 				URL     string  `json:"url"`
 				Counter *string `json:"counter"`
-				Listed  *string `json:"listed"`
+				Listed  *int64  `json:"listed"`
 			} `json:"purl"`
 		} `json:"response"`
 	}
@@ -137,9 +137,9 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 		Response struct {
 			Message string `json:"message"`
 			PURLs   []struct {
-				Name    string  `json:"name"`
-				URL     string  `json:"url"`
-				Counter *int64  `json:"counter"`
+				Name    string `json:"name"`
+				URL     string `json:"url"`
+				Counter *int64 `json:"counter"`
 				Listed  *int64 `json:"listed"`
 			} `json:"purls"`
 		} `json:"response"`

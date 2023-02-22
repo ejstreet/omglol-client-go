@@ -43,16 +43,40 @@ func TestCreateAndDeletePersistentURL(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	name := "test" + RunUID
+	name1 := "testunlisted" + RunUID
 
-	p := NewPersistentURL(name, "https://example.com", false)
+	unlisted := NewPersistentURL(name1, "https://example.com", false)
 
-	err = c.CreatePersistentURL(testOwnedDomain, *p)
+	err = c.CreatePersistentURL(testOwnedDomain, *unlisted)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	err = c.DeletePersistentURL(testOwnedDomain, name)
+	_, err = c.GetPersistentURL(testOwnedDomain, name1)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	err = c.DeletePersistentURL(testOwnedDomain, name1)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	name2 := "testlisted" + RunUID
+
+	listed := NewPersistentURL(name2, "https://example.com", true)
+
+	err = c.CreatePersistentURL(testOwnedDomain, *listed)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	_, err = c.GetPersistentURL(testOwnedDomain, name2)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	err = c.DeletePersistentURL(testOwnedDomain, name2)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
