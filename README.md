@@ -51,8 +51,7 @@ This project is a work-in-progress, see the following table for supported featur
 |DNS|ListRecords|GET|✔️|
 ||FilterRecord*|GET|✔️|
 ||Create|POST|✔️|
-||Update|PATCH|⚠️|
-||Replace*|DELETE/POST|✔️|
+||Update|PATCH|✔️|
 ||Delete|DELETE|✔️|
 |PURL|List|GET|✔️|
 ||Retrieve|GET|✔️|

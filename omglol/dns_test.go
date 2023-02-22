@@ -55,7 +55,6 @@ func TestFilterDNSRecords(t *testing.T) {
 	t.Logf(d2.ToString())
 }
 
-// There is currently no test for the Update method, as it does not work at time of writing, see https://github.com/neatnik/omg.lol/issues/584
 func TestCreateAndDeleteDNSRecord(t *testing.T) {
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
@@ -78,7 +77,7 @@ func TestCreateAndDeleteDNSRecord(t *testing.T) {
 	}
 }
 
-func TestCreateReplaceDeleteDNSRecord(t *testing.T) {
+func TestCreateUpdateDeleteDNSRecord(t *testing.T) {
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -87,7 +86,7 @@ func TestCreateReplaceDeleteDNSRecord(t *testing.T) {
 
 	record1 := NewDNSEntry("TXT", "testcreate"+RunUID, "test=true", 300)
 
-	record2 := NewDNSEntry("TXT", "testreplace"+RunUID, "test=true", 300)
+	record2 := NewDNSEntry("TXT", "testupdate"+RunUID, "test=true", 300)
 
 	create, err := c.CreateDNSRecord(testOwnedDomain, *record1)
 	if err != nil {
@@ -96,7 +95,7 @@ func TestCreateReplaceDeleteDNSRecord(t *testing.T) {
 
 	t.Logf(create.ToString())
 
-	replace, err := c.ReplaceDNSRecord(testOwnedDomain, *record2, *create.ID)
+	replace, err := c.UpdateDNSRecord(testOwnedDomain, *record2, *create.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}

@@ -1,7 +1,7 @@
 package omglol
 
 import (
-	"math/rand"
+	"fmt"
 	"os"
 	"time"
 )
@@ -11,7 +11,7 @@ var testKey = os.Getenv("OMGLOL_API_KEY")
 var testName = os.Getenv("OMGLOL_USERNAME")
 var testOwnedDomain = os.Getenv("OMGLOL_TEST_OWNED_DOMAIN") // some tests will only work if you own the domain you are testing against
 
-func setHostURL () string {
+func setHostURL() string {
 	if hostURL, exists := os.LookupEnv("OMGLOL_API_HOST"); exists {
 		return hostURL
 	} else {
@@ -25,13 +25,7 @@ var testHostURL = setHostURL()
 func generateRunUID() string {
 	RunUID := os.Getenv("GITHUB_RUN_ID") + os.Getenv("GITHUB_RUN_ATTEMPT")
 	if RunUID == "" {
-		rand.Seed(time.Now().UnixNano())
-
-		charset := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-		length := 10
-		for i := 0; i < length; i++ {
-			RunUID += string(charset[rand.Intn(len(charset))])
-		}
+		RunUID = fmt.Sprintf("ts%d", time.Now().Unix())
 	}
 	return RunUID
 }

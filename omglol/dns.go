@@ -24,8 +24,8 @@ func (c *Client) ListDNSRecords(address string) (*[]DNSRecord, error) {
 	type recordsResponse struct {
 		Request  request `json:"request"`
 		Response struct {
-			Message string `json:"message"`
-			DNS []DNSRecord `json:"dns"`
+			Message string      `json:"message"`
+			DNS     []DNSRecord `json:"dns"`
 		} `json:"response"`
 	}
 
@@ -163,19 +163,6 @@ func NewDNSEntry(Type, Name, Data string, TTL int64, Priority ...int64) *DNSEntr
 	}
 }
 
-func newDNSRecord(id, ttl int64, typ, name, data, createdAt, updatedAt string, priority *int64) *DNSRecord {
-	return &DNSRecord{
-		ID:        &id,
-		Type:      &typ,
-		Name:      &name,
-		Data:      &data,
-		Priority:  priority,
-		TTL:       &ttl,
-		CreatedAt: &createdAt,
-		UpdatedAt: &updatedAt,
-	}
-}
-
 // This function resolves an inconsistency in the current version of the API response. Hopefully it won't be required for too long.
 func convertRecordResponse(r dnsRecordContent) *DNSRecord {
 	var d DNSRecord
@@ -227,9 +214,26 @@ func (c *Client) CreateDNSRecord(domain string, record DNSEntry) (*DNSRecord, er
 }
 
 // Update an existing DNS record. See https://api.omg.lol/#token-patch-dns-edit-an-existing-dns-record
-// Note this method does not work at time of writing due to an API bug, see https://github.com/neatnik/omg.lol/issues/584
-// Suggested workaround is to use the Replace function instead, which uses the same interface.
-func (c *Client) UpdateDNSRecord(domain string, record DNSEntry, record_id int64) (*DNSRecord, error) {
+func (c *Client) UpdateDNSRecord(domain string, entry DNSEntry, record_id int64) (*DNSRecord, error) {
+	// The following struct wrangling is a workaround, see https://github.com/neatnik/omg.lol/issues/584
+	type updateRecord struct {
+		Type     *string `json:"type"`
+		Name     *string `json:"name"`
+		Data     *string `json:"data"`
+		Priority *int64  `json:"priority"`
+		TTL      *int64  `json:"ttl"`
+		ID       int64   `json:"id"`
+	}
+
+	record := updateRecord{
+		Type:     entry.Type,
+		Name:     entry.Name,
+		Data:     entry.Data,
+		Priority: entry.Priority,
+		TTL:      entry.TTL,
+		ID:       record_id,
+	}
+
 	jsonData, err := json.Marshal(record)
 
 	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/address/%s/dns/%d", c.HostURL, domain, record_id), bytes.NewBuffer([]byte(jsonData)))
@@ -272,19 +276,4 @@ func (c *Client) DeleteDNSRecord(domain string, record_id int64) error {
 	}
 
 	return nil
-}
-
-// Delete a record with a given ID, then Create a new one using the provided values.
-func (c *Client) ReplaceDNSRecord(domain string, record DNSEntry, record_id int64) (*DNSRecord, error) {
-	err := c.DeleteDNSRecord(domain, record_id)
-	if err != nil {
-		return nil, err
-	}
-
-	r, err := c.CreateDNSRecord(domain, record)
-	if err != nil {
-		return nil, err
-	}
-
-	return r, nil
 }
