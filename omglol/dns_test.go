@@ -5,6 +5,7 @@ import (
 )
 
 func TestListDNSRecords(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -22,6 +23,7 @@ func TestListDNSRecords(t *testing.T) {
 }
 
 func TestFilterDNSRecords(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -56,6 +58,7 @@ func TestFilterDNSRecords(t *testing.T) {
 }
 
 func TestCreateAndDeleteDNSRecord(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -78,6 +81,7 @@ func TestCreateAndDeleteDNSRecord(t *testing.T) {
 }
 
 func TestCreateUpdateDeleteDNSRecord(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {

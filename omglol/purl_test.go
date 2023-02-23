@@ -5,6 +5,7 @@ import (
 )
 
 func TestGetPersistentURL(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -20,6 +21,7 @@ func TestGetPersistentURL(t *testing.T) {
 }
 
 func TestListPersistentURLs(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -37,6 +39,7 @@ func TestListPersistentURLs(t *testing.T) {
 }
 
 func TestCreateAndDeletePersistentURL(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {

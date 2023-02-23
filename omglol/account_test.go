@@ -6,6 +6,7 @@ import (
 )
 
 func TestGetAccountInfo(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -21,6 +22,7 @@ func TestGetAccountInfo(t *testing.T) {
 }
 
 func TestGetAddresses(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -36,6 +38,7 @@ func TestGetAddresses(t *testing.T) {
 }
 
 func TestSetAccountName(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -48,6 +51,7 @@ func TestSetAccountName(t *testing.T) {
 }
 
 func TestGetAccountName(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -67,6 +71,7 @@ func TestGetAccountName(t *testing.T) {
 }
 
 func TestGetActiveSessions(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -83,6 +88,7 @@ func TestGetActiveSessions(t *testing.T) {
 
 // This test cannot currently be run automatically
 func TestDeleteActiveSession(t *testing.T) {
+	t.Parallel()
 	sessionID := os.Getenv("OMGLOL_DELETABLE_SESSION_ID")
 
 	if sessionID == "" {
@@ -101,6 +107,7 @@ func TestDeleteActiveSession(t *testing.T) {
 }
 
 func TestGetAccountSettings(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -116,6 +123,7 @@ func TestGetAccountSettings(t *testing.T) {
 }
 
 func TestSetAccountSettings(t *testing.T) {
+	t.Parallel()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
