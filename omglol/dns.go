@@ -62,25 +62,25 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 					match = false
 					break
 				}
-				if id != *record.ID {
+				if id != record.ID {
 					match = false
 					break
 				}
 			case "Type":
-				if *record.Type != value.(string) {
+				if record.Type != value.(string) {
 					match = false
 					break
 				}
 			case "Name":
-				if strings.Contains(*record.Name, ".") && *record.Name != value.(string) {
+				if strings.Contains(record.Name, ".") && record.Name != value.(string) {
 					match = false
 					break
-				} else if !strings.Contains(*record.Name, ".") && "@" != value.(string) {
+				} else if !strings.Contains(record.Name, ".") && "@" != value.(string) {
 					match = false
 					break
 				}
 			case "Data":
-				if *record.Data != value.(string) {
+				if record.Data != value.(string) {
 					match = false
 					break
 				}
@@ -116,17 +116,17 @@ func (c *Client) FilterDNSRecord(address string, filterCriteria map[string]inter
 					match = false
 					break
 				}
-				if ttl != *record.TTL {
+				if ttl != record.TTL {
 					match = false
 					break
 				}
 			case "CreatedAt":
-				if *record.CreatedAt != value.(string) {
+				if record.CreatedAt != value.(string) {
 					match = false
 					break
 				}
 			case "UpdatedAt":
-				if *record.UpdatedAt != value.(string) {
+				if record.UpdatedAt != value.(string) {
 					match = false
 					break
 				}
@@ -186,7 +186,7 @@ func (d *DNSRecord) ToString() string {
 	if d.Priority != nil {
 		priority = strconv.Itoa(int(*d.Priority))
 	}
-	return fmt.Sprintf("ID: %d, Type: %s, Name: %s, Data: %s, Priority: %s, TTL: %d, CreatedAt: %s, UpdatedAt: %s", *d.ID, *d.Type, *d.Name, *d.Data, priority, *d.TTL, *d.CreatedAt, *d.UpdatedAt)
+	return fmt.Sprintf("ID: %d, Type: %s, Name: %s, Data: %s, Priority: %s, TTL: %d, CreatedAt: %s, UpdatedAt: %s", d.ID, d.Type, d.Name, d.Data, priority, d.TTL, d.CreatedAt, d.UpdatedAt)
 }
 
 // Add a new DNS record. See https://api.omg.lol/#token-post-dns-create-a-new-dns-record
@@ -231,7 +231,7 @@ func (c *Client) UpdateDNSRecord(domain string, entry DNSEntry, record_id int64)
 		Data:     entry.Data,
 		Priority: entry.Priority,
 		TTL:      entry.TTL,
-		ID:       record_id,
+		ID:       record_id, //this is the important line
 	}
 
 	jsonData, err := json.Marshal(record)

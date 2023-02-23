@@ -107,25 +107,25 @@ type DNSEntry struct {
 
 // Return type for DNS related methods
 type DNSRecord struct {
-	ID        *int64  `json:"id"`
-	Type      *string `json:"type"`
-	Name      *string `json:"name"`
-	Data      *string `json:"data"`
-	Priority  *int64  `json:"priority"`
-	TTL       *int64  `json:"ttl"`
-	CreatedAt *string `json:"created_at"`
-	UpdatedAt *string `json:"updated_at"`
+	ID        int64  `json:"id"`
+	Type      string `json:"type"`
+	Name      string `json:"name"`
+	Data      string `json:"data"`
+	Priority  *int64 `json:"priority"`
+	TTL       int64  `json:"ttl"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 type dnsRecordContent struct {
-	ID        *int64  `json:"id"`
-	Type      *string `json:"type"`
-	Name      *string `json:"name"`
-	Content   *string `json:"content"`
+	ID        int64  `json:"id"`
+	Type      string `json:"type"`
+	Name      string `json:"name"`
+	Content   string `json:"content"`
 	Priority  *int64  `json:"priority"`
-	TTL       *int64  `json:"ttl"`
-	CreatedAt *string `json:"created_at"`
-	UpdatedAt *string `json:"updated_at"`
+	TTL       int64  `json:"ttl"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 type dnsChangeResponse struct {
@@ -149,5 +149,5 @@ type PersistentURL struct {
 	Name    string `json:"name"`
 	URL     string `json:"url"`
 	Counter *int64 `json:"counter"`
-	Listed  *bool  `json:"listed"`
+	Listed  bool   `json:"listed"`
 }

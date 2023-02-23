@@ -71,7 +71,7 @@ func TestCreateAndDeleteDNSRecord(t *testing.T) {
 
 	t.Logf(r.ToString())
 
-	err = c.DeleteDNSRecord(testOwnedDomain, *r.ID)
+	err = c.DeleteDNSRecord(testOwnedDomain, r.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -95,14 +95,14 @@ func TestCreateUpdateDeleteDNSRecord(t *testing.T) {
 
 	t.Logf(create.ToString())
 
-	replace, err := c.UpdateDNSRecord(testOwnedDomain, *record2, *create.ID)
+	replace, err := c.UpdateDNSRecord(testOwnedDomain, *record2, create.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
 	t.Logf(replace.ToString())
 
-	err = c.DeleteDNSRecord(testOwnedDomain, *replace.ID)
+	err = c.DeleteDNSRecord(testOwnedDomain, replace.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}

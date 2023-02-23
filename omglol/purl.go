@@ -19,7 +19,7 @@ func NewPersistentURL(Name, URL string, listed bool, Counter ...*int64) *Persist
 	return &PersistentURL{
 		Name:    Name,
 		URL:     URL,
-		Listed:  &listed,
+		Listed:  listed,
 		Counter: counter,
 	}
 }
@@ -30,16 +30,31 @@ func (p *PersistentURL) ToString() string {
 	if p.Counter != nil {
 		counter = strconv.Itoa(int(*p.Counter))
 	}
-	return fmt.Sprintf("Name: %s, URL: %s, Counter: %s", p.Name, p.URL, counter)
+	return fmt.Sprintf("Name: %s, URL: %s, Listed: %t, Counter: %s", p.Name, p.URL, p.Listed, counter)
 }
 
 // Create a new PersistentURL. See https://api.omg.lol/#token-post-purls-create-a-new-purl
 func (c *Client) CreatePersistentURL(domain string, purl PersistentURL) error {
-	if !*purl.Listed {
-		purl.Listed = nil
+	
+	type purlRequest struct {
+		Name    string `json:"name"`
+		URL     string `json:"url"`
+		Listed  *bool   `json:"listed"`
 	}
 
-	jsonData, err := json.Marshal(purl)
+	p := purlRequest{
+		Name: purl.Name,
+		URL: purl.URL,
+	}
+
+	if !purl.Listed {
+		p.Listed = nil
+    } else {
+		t := true
+		p.Listed = &t
+	}
+
+	jsonData, err := json.Marshal(p)
 
 	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/address/%s/purl", c.HostURL, domain), bytes.NewBuffer([]byte(jsonData)))
 
@@ -164,6 +179,12 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 			x.Counter = &counter
 		} else {
 			x.Counter = purl.Counter
+		}
+
+		if purl.Listed == nil {
+			x.Listed = false
+		} else {
+			x.Listed = true
 		}
 
 		p = append(p, x)
