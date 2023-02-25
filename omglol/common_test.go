@@ -2,6 +2,7 @@ package omglol
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"testing"
 	"time"
@@ -11,8 +12,6 @@ var testEmail = os.Getenv("OMGLOL_USER_EMAIL")
 var testKey = os.Getenv("OMGLOL_API_KEY")
 var testName = os.Getenv("OMGLOL_USERNAME")
 var testOwnedDomain = os.Getenv("OMGLOL_TEST_OWNED_DOMAIN") // some tests will only work if you own the domain you are testing against
-
-const RFC2822 = "Mon, 02 Jan 2006 15:04:05 -0700"
 
 func setHostURL() string {
 	if hostURL, exists := os.LookupEnv("OMGLOL_API_HOST"); exists {
@@ -45,6 +44,8 @@ func isOneOf(target string, list []string) bool {
 }
 
 func testTimestamps(t *testing.T, unix int64, iso8601, rfc2822, relative string) {
+	const RFC2822 = "Mon, 02 Jan 2006 15:04:05 -0700"
+
 	u := time.Unix(unix, 0)
 	if u.IsZero() {
 		t.Errorf("Invalid UnixEpochTime: %d", unix)
@@ -66,4 +67,14 @@ func testTimestamps(t *testing.T, unix int64, iso8601, rfc2822, relative string)
 	if len(relative) <= 0 {
 		t.Errorf("Invalid RelativeTime: %s", relative)
 	}
+}
+
+func randStringBytes(n int) string {
+	const letterBytes = "abcdefghijklmnopqrstuvwxyz0123456789"
+    rand.Seed(time.Now().UnixNano())
+    b := make([]byte, n)
+    for i := range b {
+        b[i] = letterBytes[rand.Intn(len(letterBytes))]
+    }
+    return string(b)
 }

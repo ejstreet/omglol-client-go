@@ -32,8 +32,8 @@ func (c *Client) GetAddressAvailability(address string) (*AddressAvailability, e
 	return &a.Availability, nil
 }
 
-// Get the expiration date for an address. See https://api.omg.lol/#noauth-get-address-retrieve-address-expiration
-func (c *Client) GetAddressExpiration(address string) (*AddressExpiration, error) {
+// Get the expiration data for an address. Returns `true` if expired, `false` if not. See https://api.omg.lol/#noauth-get-address-retrieve-address-expiration
+func (c *Client) GetAddressExpiration(address string) (*bool, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/address/%s/expiration", c.HostURL, address), nil)
 	if err != nil {
 		return nil, err
@@ -45,8 +45,11 @@ func (c *Client) GetAddressExpiration(address string) (*AddressExpiration, error
 	}
 
 	type expirationResponse struct {
-		Request    request           `json:"request"`
-		Expiration AddressExpiration `json:"response"`
+		Request  request `json:"request"`
+		Response struct {
+			Message string `json:"message"`
+			Expired bool   `json:"expired"`
+		} `json:"response"`
 	}
 
 	var e expirationResponse
@@ -55,12 +58,12 @@ func (c *Client) GetAddressExpiration(address string) (*AddressExpiration, error
 		return nil, err
 	}
 
-	return &e.Expiration, nil
+	return &e.Response.Expired, nil
 }
 
 // Get comprehensive information about an address. See https://api.omg.lol/#token-get-address-retrieve-private-information-about-an-address
 func (c *Client) GetAddressInfo(address string) (*AddressInfo, error) {
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/address/%s/availability", c.HostURL, address), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/address/%s/info", c.HostURL, address), nil)
 	if err != nil {
 		return nil, err
 	}
