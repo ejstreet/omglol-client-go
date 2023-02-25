@@ -33,8 +33,8 @@ func TestGetAccountInfo(t *testing.T) {
 	if a.Settings.DateFormat != nil && !isOneOf(*a.Settings.DateFormat, []string{"iso_8601", "dmy", "mdy"}) {
 		t.Errorf("Invalid date format setting: %s", *a.Settings.DateFormat)
 	}
-	if a.Settings.Owner != nil && len(*a.Settings.Owner) <= 0 {
-		t.Errorf("Invalid Owner: %s", *a.Settings.Owner)
+	if a.Settings.Owner != testEmail {
+		t.Errorf("Settings.Owner %s did not match expected %s.", a.Settings.Owner, testEmail)
 	}
 	testTimestamps(t, a.Created.UnixEpochTime, a.Created.Iso8601Time, a.Created.Rfc2822Time, a.Created.RelativeTime)
 }
@@ -163,14 +163,14 @@ func TestGetAccountSettings(t *testing.T) {
 
 	t.Logf("%+v\n", s)
 
-	if *s.Owner != testEmail {
-		t.Errorf("Settings.Owner %s did not match expected %s.", *s.Owner, testEmail)
-	}
-	if s.Communication != nil && !isOneOf(*s.Communication, []string{"email_ok", "email_not_ok"}){
-		t.Errorf("Settings.Communication value %s is not one the expected values.", *s.Communication)
+	if s.Communication != nil && !isOneOf(*s.Communication, []string{"email_ok", "email_not_ok"}) {
+		t.Errorf("Invalid communication setting: %s", *s.Communication)
 	}
 	if s.DateFormat != nil && !isOneOf(*s.DateFormat, []string{"iso_8601", "dmy", "mdy"}) {
-		t.Errorf("Settings.DateFormat value %s is not one of the expected values.", *s.DateFormat)
+		t.Errorf("Invalid date format setting: %s", *s.DateFormat)
+	}
+	if s.Owner != testEmail {
+		t.Errorf("Settings.Owner %s did not match expected %s.", s.Owner, testEmail)
 	}
 	// s.WebEditor appears to be depricated
 }
