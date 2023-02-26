@@ -4,8 +4,20 @@ import (
 	"testing"
 )
 
+func validatePersistentURL(t *testing.T, p PersistentURL) {
+	if len(p.Name) <= 0 {
+		t.Error("PURL Name is empty.")
+	}
+	if len(p.URL) <= 0 {
+		t.Error("PURL URL is empty.")
+	}
+	if p.Counter == nil {
+		t.Error("PURL Counter should not be 'nil'.")
+	}
+}
+
 func TestGetPersistentURL(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -17,11 +29,16 @@ func TestGetPersistentURL(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(p.ToString())
+	if p != nil {
+		t.Logf(p.String())
+		validatePersistentURL(t, *p)
+	} else {
+		t.Error("GetPersistentURL returned 'nil'.")
+	}
 }
 
 func TestListPersistentURLs(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -33,13 +50,19 @@ func TestListPersistentURLs(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	for _, p := range *l {
-		t.Logf(p.ToString() + "\n")
+	if l != nil {
+		for _, p := range *l {
+			t.Logf(p.String() + "\n")
+			validatePersistentURL(t, p)
+		}
+	} else {
+		t.Error("ListPersistentURLs returned 'nil'.")
 	}
+
 }
 
 func TestCreateAndDeletePersistentURL(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -55,9 +78,16 @@ func TestCreateAndDeletePersistentURL(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	_, err = c.GetPersistentURL(testOwnedDomain, name1)
+	u, err := c.GetPersistentURL(testOwnedDomain, name1)
 	if err != nil {
 		t.Errorf(err.Error())
+	}
+
+	if u != nil {
+		t.Log(u.String())
+		validatePersistentURL(t, *u)
+	} else {
+		t.Error("GetPersistentURL returned 'nil' when retrieving unlisted PURL.")
 	}
 
 	err = c.DeletePersistentURL(testOwnedDomain, name1)
@@ -74,9 +104,16 @@ func TestCreateAndDeletePersistentURL(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	_, err = c.GetPersistentURL(testOwnedDomain, name2)
+	l, err := c.GetPersistentURL(testOwnedDomain, name2)
 	if err != nil {
 		t.Errorf(err.Error())
+	}
+
+	if l != nil {
+		t.Log(l.String())
+		validatePersistentURL(t, *l)
+	} else {
+		t.Error("GetPersistentURL returned 'nil' when retrieving listed PURL.")
 	}
 
 	err = c.DeletePersistentURL(testOwnedDomain, name2)
