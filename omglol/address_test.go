@@ -6,7 +6,7 @@ import (
 )
 
 func TestGetAddressAvailability(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -62,7 +62,7 @@ func TestGetAddressAvailability(t *testing.T) {
 }
 
 func TestGetAddressExpiration(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -85,7 +85,7 @@ func TestGetAddressExpiration(t *testing.T) {
 }
 
 func TestGetAddressInfo(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -126,7 +126,7 @@ func TestGetAddressInfo(t *testing.T) {
 }
 
 func TestGetAddressDirectory(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
