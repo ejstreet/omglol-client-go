@@ -8,6 +8,9 @@ import (
 	"time"
 )
 
+// time in seconds to sleep before running each test. Avoids hitting rate limits
+const initPause int64 = 1
+
 var testEmail = os.Getenv("OMGLOL_USER_EMAIL")
 var testKey = os.Getenv("OMGLOL_API_KEY")
 var testName = os.Getenv("OMGLOL_USERNAME")
@@ -22,6 +25,11 @@ func setHostURL() string {
 }
 
 var testHostURL = setHostURL()
+
+// Add sleep to tests to avoid hitting rate limits when accessing the API
+func sleep() {
+    time.Sleep(time.Duration(initPause) * time.Second)
+}
 
 // Generates a UID from the Github Workflow if present, otherwise generates a random string. This UID can then be used to prevent collision between test runs.
 func generateRunUID() string {
