@@ -1,13 +1,13 @@
 package omglol
 
 import (
-	"os"
 	"net"
+	"os"
 	"testing"
 )
 
 func TestGetAccountInfo(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -41,11 +41,11 @@ func TestGetAccountInfo(t *testing.T) {
 	} else {
 		t.Error("Account Info returned 'nil'.")
 	}
-	
+
 }
 
 func TestGetAddresses(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -71,11 +71,10 @@ func TestGetAddresses(t *testing.T) {
 		t.Error("Addresses returned 'nil'.")
 	}
 
-	
 }
 
 func TestSetAccountName(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -88,7 +87,7 @@ func TestSetAccountName(t *testing.T) {
 }
 
 func TestGetAccountName(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -109,11 +108,11 @@ func TestGetAccountName(t *testing.T) {
 	} else {
 		t.Error("Account name returned 'nil'.")
 	}
-	
+
 }
 
 func TestGetActiveSessions(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -127,7 +126,7 @@ func TestGetActiveSessions(t *testing.T) {
 
 	if s != nil {
 		t.Logf("Active Sessions: %+v", *s)
-		for _, x := range *s {			
+		for _, x := range *s {
 			if len(x.SessionID) != 32 {
 				t.Errorf("Session ID %s is not expected length of 32, got length %d", x.SessionID, len(x.SessionID))
 			}
@@ -148,17 +147,15 @@ func TestGetActiveSessions(t *testing.T) {
 		t.Error("Active sessions returned 'nil'.")
 	}
 
-	
 }
 
 // This test cannot currently be run automatically
-func TestDeleteActiveSession(t *testing.T) {
-	t.Parallel()
-	sessionID := os.Getenv("OMGLOL_DELETABLE_SESSION_ID")
-
-	if sessionID == "" {
+func TestDeleteActiveSession(t *testing.T) {	
+	sessionID, exists := os.LookupEnv("OMGLOL_DELETABLE_SESSION_ID")
+	if !exists {
 		t.Skip()
 	}
+	sleep()
 
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
@@ -172,7 +169,7 @@ func TestDeleteActiveSession(t *testing.T) {
 }
 
 func TestGetAccountSettings(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -200,11 +197,11 @@ func TestGetAccountSettings(t *testing.T) {
 	} else {
 		t.Errorf("Account Settings returned 'nil'.")
 	}
-	
+
 }
 
 func TestSetAccountSettings(t *testing.T) {
-	t.Parallel()
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
