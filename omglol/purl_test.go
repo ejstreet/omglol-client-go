@@ -86,6 +86,9 @@ func TestCreateAndDeletePersistentURL(t *testing.T) {
 	if u != nil {
 		t.Log(u.String())
 		validatePersistentURL(t, *u)
+		if u.Listed != false {
+			t.Error("Unlisted PURL should not have listed set to 'true'.")
+		}
 	} else {
 		t.Error("GetPersistentURL returned 'nil' when retrieving unlisted PURL.")
 	}
@@ -112,6 +115,9 @@ func TestCreateAndDeletePersistentURL(t *testing.T) {
 	if l != nil {
 		t.Log(l.String())
 		validatePersistentURL(t, *l)
+		if l.Listed != true {
+			t.Error("Listed PURL should not have listed set to 'false'.")
+		}
 	} else {
 		t.Error("GetPersistentURL returned 'nil' when retrieving listed PURL.")
 	}
