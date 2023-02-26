@@ -14,19 +14,29 @@ type apiResponse struct {
 	Response json.RawMessage `json:"response"`
 }
 
-type Registration struct {
-	Message       string `json:"message,omitempty"`
-	UnixEpochTime int64  `json:"unix_epoch_time,omitempty"`
-	Iso8601Time   string `json:"iso_8601_time,omitempty"`
-	Rfc2822Time   string `json:"rfc_2822_time,omitempty"`
-	RelativeTime  string `json:"relative_time,omitempty"`
+type AddressRegistration struct {
+	Message       string `json:"message"`
+	UnixEpochTime int64  `json:"unix_epoch_time"`
+	Iso8601Time   string `json:"iso_8601_time"`
+	Rfc2822Time   string `json:"rfc_2822_time"`
+	RelativeTime  string `json:"relative_time"`
+}
+
+type AddressExpiration struct {
+	Message       string `json:"message"`
+	Expired       bool   `json:"expired"`
+	WillExpire    bool   `json:"will_expire"`
+	UnixEpochTime int64  `json:"unix_epoch_time"`
+	Iso8601Time   string `json:"iso_8601_time"`
+	Rfc2822Time   string `json:"rfc_2822_time"`
+	RelativeTime  string `json:"relative_time"`
 }
 
 type AccountSettings struct {
-	Owner         string `json:"owner,omitempty"`
-	Communication string `json:"communication,omitempty"`
-	DateFormat    string `json:"date_format,omitempty"`
-	WebEditor     string `json:"web_editor,omitempty"`
+	Owner         string  `json:"owner,omitempty"`
+	Communication *string `json:"communication,omitempty"`
+	DateFormat    *string `json:"date_format,omitempty"`
+	WebEditor     *string `json:"web_editor,omitempty"`
 }
 
 type Account struct {
@@ -52,13 +62,13 @@ type ActiveSession struct {
 }
 
 type Address struct {
-	Address      string            `json:"address"`
-	Message      string            `json:"message,omitempty"`
-	Punycode     string            `json:"punycode,omitempty"`
-	SeeAlso      string            `json:"see-also,omitempty"`
-	Registration Registration      `json:"registration"`
-	Expiration   AddressExpiration `json:"expiration"`
-	Owner        string            `json:"owner,omitempty"`
+	Address      string              `json:"address"`
+	Message      string              `json:"message,omitempty"`
+	Punycode     string              `json:"punycode,omitempty"`
+	SeeAlso      string              `json:"see-also,omitempty"`
+	Registration AddressRegistration `json:"registration"`
+	Expiration   AddressExpiration   `json:"expiration"`
+	Owner        string              `json:"owner,omitempty"`
 }
 
 type AddressAvailability struct {
@@ -68,21 +78,11 @@ type AddressAvailability struct {
 	Availability string `json:"availability"`
 }
 
-type AddressExpiration struct {
-	Message       string `json:"message,omitempty"`
-	Expired       bool   `json:"expired,omitempty"`
-	WillExpire    bool   `json:"will_expire,omitempty"`
-	UnixEpochTime int64  `json:"unix_epoch_time,omitempty"`
-	Iso8601Time   string `json:"iso_8601_time,omitempty"`
-	Rfc2822Time   string `json:"rfc_2822_time,omitempty"`
-	RelativeTime  string `json:"relative_time,omitempty"`
-}
-
 type AddressInfo struct {
-	Address      string            `json:"address"`
-	Message      string            `json:"message"`
-	Registration Registration      `json:"registration"`
-	Expiration   AddressExpiration `json:"expiration"`
+	Address      string              `json:"address"`
+	Message      string              `json:"message"`
+	Registration AddressRegistration `json:"registration"`
+	Expiration   AddressExpiration   `json:"expiration"`
 	Verification struct {
 		Message  string `json:"message"`
 		Verified bool   `json:"verified"`
@@ -122,7 +122,7 @@ type dnsRecordContent struct {
 	Type      string `json:"type"`
 	Name      string `json:"name"`
 	Content   string `json:"content"`
-	Priority  *int64  `json:"priority"`
+	Priority  *int64 `json:"priority"`
 	TTL       int64  `json:"ttl"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`

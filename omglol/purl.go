@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 // Create a PersistentURL object
@@ -25,7 +26,7 @@ func NewPersistentURL(Name, URL string, listed bool, Counter ...*int64) *Persist
 }
 
 // Returns a string representaion of a PersistentURL
-func (p *PersistentURL) ToString() string {
+func (p *PersistentURL) String() string {
 	counter := "<nil>"
 	if p.Counter != nil {
 		counter = strconv.Itoa(int(*p.Counter))
@@ -35,21 +36,21 @@ func (p *PersistentURL) ToString() string {
 
 // Create a new PersistentURL. See https://api.omg.lol/#token-post-purls-create-a-new-purl
 func (c *Client) CreatePersistentURL(domain string, purl PersistentURL) error {
-	
+
 	type purlRequest struct {
-		Name    string `json:"name"`
-		URL     string `json:"url"`
-		Listed  *bool   `json:"listed"`
+		Name   string `json:"name"`
+		URL    string `json:"url"`
+		Listed *bool  `json:"listed"`
 	}
 
 	p := purlRequest{
 		Name: purl.Name,
-		URL: purl.URL,
+		URL:  purl.URL,
 	}
 
 	if !purl.Listed {
 		p.Listed = nil
-    } else {
+	} else {
 		t := true
 		p.Listed = &t
 	}
@@ -139,8 +140,13 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 		return nil, err
 	}
 
+	var p []PersistentURL
+
 	body, err := c.doRequest(req)
 	if err != nil {
+		if strings.Contains(err.Error(), "status: 404") {
+			return &p, nil
+		}
 		return nil, err
 	}
 
@@ -165,8 +171,6 @@ func (c *Client) ListPersistentURLs(address string) (*[]PersistentURL, error) {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
 	}
-
-	var p []PersistentURL
 
 	for _, purl := range r.Response.PURLs {
 		var x PersistentURL

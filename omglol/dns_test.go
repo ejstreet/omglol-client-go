@@ -2,9 +2,52 @@ package omglol
 
 import (
 	"testing"
+	"time"
 )
 
+func validateRecord(t *testing.T, r DNSRecord) {
+	if r.ID <= 0 {
+		t.Errorf("Record ID is invalid.")
+	}
+	if !isOneOf(r.Type, []string{"A", "AAAA", "CAA", "CNAME", "MX", "NS", "SRV", "TXT"}) {
+		t.Errorf("Unexpected record type: %s.", r.Type)
+	}
+	if len(r.Name) <= 0 {
+		t.Errorf("Name is empty.")
+	}
+	if len(r.Data) <= 0 {
+		t.Errorf("Data is empty.")
+	}
+	if r.Type == "MX" && r.Priority == nil {
+		t.Errorf("Priority cannot be nil for record type 'MX'.")
+	}
+	if r.Type != "MX" && r.Priority != nil {
+		t.Errorf("Record of type '%s' should not have a priority not equal to 'nil'.", r.Type)
+	}
+	if r.TTL <= 0 {
+		t.Errorf("TTL must be greater than 0, got %d", r.TTL)
+	}
+	created, err := time.Parse(time.RFC3339, r.CreatedAt)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if created.Unix() <= 0 {
+		t.Error("Invalid CreatedAt timestamp.")
+	}
+	updated, err := time.Parse(time.RFC3339, r.UpdatedAt)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	if updated.Unix() <= 0 {
+		t.Error("Invalid UpdatedAt timestamp.")
+	}
+	if updated.Unix() < created.Unix() {
+		t.Errorf("Updated: %s, cannot be before Created: %s.", r.UpdatedAt, r.CreatedAt)
+	}
+}
+
 func TestListDNSRecords(t *testing.T) {
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -16,46 +59,63 @@ func TestListDNSRecords(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	for _, d := range *l {
-		t.Logf(d.ToString() + "\n")
+	if l != nil {
+		for _, d := range *l {
+			t.Logf(d.String() + "\n")
+			validateRecord(t, d)
+		}
+	} else {
+		t.Error("ListDNSRecords returned 'nil'.")
 	}
+
 }
 
 func TestFilterDNSRecords(t *testing.T) {
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
-
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
 	// TXT Record
 	criteria1 := map[string]any{
-		"ID":       41923511,
+		"Name":     "testlistdns." + testOwnedDomain,
 		"Type":     "TXT",
 		"TTL":      300,
 		"Priority": nil,
 	}
 
 	d1, err := c.FilterDNSRecord(testOwnedDomain, criteria1)
-
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(d1.ToString())
+	if d1 != nil {
+		t.Logf(d1.String())
+		validateRecord(t, *d1)
+	} else {
+		t.Errorf("FilterDNSRecord returned nil.")
+	}
 
 	// MX Record
 	criteria2 := map[string]any{
-		"ID":       int64(42197707),
+		"Type":     "MX",
+		"Name":     "mail." + testOwnedDomain,
 		"Priority": int64(20),
 	}
 
 	d2, err := c.FilterDNSRecord(testOwnedDomain, criteria2)
 
-	t.Logf(d2.ToString())
+	if d2 != nil {
+		t.Logf(d2.String())
+		validateRecord(t, *d2)
+	} else {
+		t.Errorf("FilterDNSRecord returned nil.")
+	}
 }
 
 func TestCreateAndDeleteDNSRecord(t *testing.T) {
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -69,7 +129,12 @@ func TestCreateAndDeleteDNSRecord(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(r.ToString())
+	if r != nil {
+		t.Logf(r.String())
+		validateRecord(t, *r)
+	} else {
+		t.Error("CreateDNSRecord returned 'nil'.")
+	}
 
 	err = c.DeleteDNSRecord(testOwnedDomain, r.ID)
 	if err != nil {
@@ -78,6 +143,7 @@ func TestCreateAndDeleteDNSRecord(t *testing.T) {
 }
 
 func TestCreateUpdateDeleteDNSRecord(t *testing.T) {
+	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 
 	if err != nil {
@@ -93,16 +159,27 @@ func TestCreateUpdateDeleteDNSRecord(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(create.ToString())
-
-	replace, err := c.UpdateDNSRecord(testOwnedDomain, *record2, create.ID)
+	if create != nil {
+		t.Logf(create.String())
+		validateRecord(t, *create)
+	} else {
+		t.Error("CreateDNSRecord returned 'nil'.")
+	}
+	sleep()
+	update, err := c.UpdateDNSRecord(testOwnedDomain, *record2, create.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(replace.ToString())
+	if update != nil {
+		t.Logf(update.String())
+		validateRecord(t, *update)
+	} else {
+		t.Error("UpdateDNSRecord returned 'nil'.")
+	}
 
-	err = c.DeleteDNSRecord(testOwnedDomain, replace.ID)
+	sleep()
+	err = c.DeleteDNSRecord(testOwnedDomain, update.ID)
 	if err != nil {
 		t.Errorf(err.Error())
 	}

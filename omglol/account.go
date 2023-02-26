@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // Get information about your account. See https://api.omg.lol/#token-get-account-retrieve-account-information
@@ -118,23 +119,28 @@ func (c *Client) GetActiveSessions() (*[]ActiveSession, error) {
 		return nil, err
 	}
 
+	var Sessions []ActiveSession
+
 	body, err := c.doRequest(req)
 	if err != nil {
+		if strings.Contains(err.Error(), "status: 404") {
+			return &Sessions, nil
+		}
 		return nil, err
 	}
 
-	type sessionsResponse struct {
-		Request  request         `json:"request"`
-		Sessions []ActiveSession `json:"response"`
-	}
-
-	var r sessionsResponse
+	var r apiResponse
 	if err := json.Unmarshal(body, &r); err != nil {
 		fmt.Printf("Error unmarshalling response: %v\n", err)
 		return nil, err
+	}	
+
+	if err := json.Unmarshal(r.Response, &Sessions); err != nil {
+		fmt.Printf("Error unmarshalling sessions: %v\n", err)
+		return nil, err
 	}
 
-	return &r.Sessions, nil
+	return &Sessions, nil
 }
 
 // Delete a session. See https://api.omg.lol/#token-delete-account-remove-a-session

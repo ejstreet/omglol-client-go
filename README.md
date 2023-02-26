@@ -59,5 +59,3 @@ This project is a work-in-progress, see the following table for supported featur
 ||Delete|DELETE|✔️|
 
 >**Note** Features marked with a * are additional to what the API provides
-
->**Note** At the time of writing, `UpdateDNSRecord` currently does not work as described in the API docs. See https://github.com/neatnik/omg.lol/issues/584. `ReplaceDNSRecord` can be used instead.

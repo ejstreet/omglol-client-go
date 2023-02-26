@@ -16,8 +16,13 @@ func (c *Client) ListDNSRecords(address string) (*[]DNSRecord, error) {
 		return nil, err
 	}
 
+	var d []DNSRecord
+
 	body, err := c.doRequest(req)
 	if err != nil {
+		if strings.Contains(err.Error(), "status: 404") {
+			return &d, nil
+		}
 		return nil, err
 	}
 
@@ -35,7 +40,9 @@ func (c *Client) ListDNSRecords(address string) (*[]DNSRecord, error) {
 		return nil, err
 	}
 
-	return &r.Response.DNS, nil
+	d = r.Response.DNS
+
+	return &d, nil
 }
 
 // Find a single DNS record from its attributes.
@@ -180,7 +187,7 @@ func convertRecordResponse(r dnsRecordContent) *DNSRecord {
 }
 
 // Returns a string representaion of a DNS record
-func (d *DNSRecord) ToString() string {
+func (d *DNSRecord) String() string {
 
 	priority := "<nil>"
 	if d.Priority != nil {
