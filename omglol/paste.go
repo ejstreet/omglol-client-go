@@ -9,17 +9,24 @@ import (
 )
 
 // Create a Paste object
-func NewPaste(Title, Content string, ModifiedOn int64) *Paste {
+func NewPaste(Title, Content string, Listed bool, ModifiedOn ...int64) *Paste {
+	var modified *int64
+	if len(ModifiedOn) > 0 {
+		m := ModifiedOn[0]
+		modified = &m
+	}
+
 	return &Paste{
 		Title:      Title,
 		Content:    Content,
-		ModifiedOn: ModifiedOn,
+		Listed:     Listed,
+		ModifiedOn: modified,
 	}
 }
 
 // Returns a string representaion of a Paste
 func (p *Paste) String() string {
-	return fmt.Sprintf("Title: %s, Content: %s, ModifiedOn: %d", p.Title, p.Content, p.ModifiedOn)
+	return fmt.Sprintf("Title: %s, Content: %s, Listed: %t, ModifiedOn: %d", p.Title, p.Content, p.Listed, p.ModifiedOn)
 }
 
 // Create a new Paste. See https://api.omg.lol/#token-post-pastes-create-a-new-paste
@@ -27,11 +34,19 @@ func (c *Client) CreatePaste(domain string, paste Paste) error {
 	type pasteRequest struct {
 		Title   string `json:"title"`
 		Content string `json:"content"`
+		Listed  *bool  `json:"listed"`
 	}
 
 	p := pasteRequest{
 		Title:   paste.Title,
 		Content: paste.Content,
+	}
+
+	if !paste.Listed {
+		p.Listed = nil
+	} else {
+		t := true
+		p.Listed = &t
 	}
 
 	jsonData, err := json.Marshal(p)
@@ -81,6 +96,7 @@ func (c *Client) GetPaste(domain string, pasteTitle string) (*Paste, error) {
 				Title      string `json:"title"`
 				Content    string `json:"content"`
 				ModifiedOn int64  `json:"modified_on"`
+				Listed     *int64 `json:"listed"`
 			} `json:"paste"`
 		} `json:"response"`
 	}
@@ -91,7 +107,14 @@ func (c *Client) GetPaste(domain string, pasteTitle string) (*Paste, error) {
 		return nil, err
 	}
 
-	return NewPaste(g.Response.Paste.Title, g.Response.Paste.Content, g.Response.Paste.ModifiedOn), nil
+	var listed bool
+	if g.Response.Paste.Listed != nil {
+		listed = true
+	} else {
+		listed = false
+	}
+
+	return NewPaste(g.Response.Paste.Title, g.Response.Paste.Content, listed, g.Response.Paste.ModifiedOn), nil
 }
 
 // Retrieve a list of pastes associated with an address. See https://api.omg.lol/#token-get-pastebin-retrieve-an-entire-pastebin
@@ -105,6 +128,7 @@ func (c *Client) ListPastes(address string) (*[]Paste, error) {
 
 	body, err := c.doRequest(req)
 	if err != nil {
+		// Return an empty list instead of erroring if no pastes exist
 		if strings.Contains(err.Error(), "status: 404") {
 			return &p, nil
 		}
@@ -117,12 +141,8 @@ func (c *Client) ListPastes(address string) (*[]Paste, error) {
 			Success    bool  `json:"success"`
 		} `json:"request"`
 		Response struct {
-			Message  string `json:"message"`
-			Pastebin []struct {
-				Title      string `json:"title"`
-				Content    string `json:"content"`
-				ModifiedOn int64  `json:"modified_on"`
-			} `json:"pastebin"`
+			Message  string  `json:"message"`
+			Pastebin []Paste `json:"pastebin"`
 		} `json:"response"`
 	}
 
@@ -138,6 +158,12 @@ func (c *Client) ListPastes(address string) (*[]Paste, error) {
 		x.Title = paste.Title
 		x.Content = paste.Content
 		x.ModifiedOn = paste.ModifiedOn
+		if !paste.Listed {
+			x.Listed = false
+		} else {
+			x.Listed = true
+		}
+
 		p = append(p, x)
 	}
 

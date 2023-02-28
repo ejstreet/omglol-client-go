@@ -8,8 +8,8 @@ func validatePaste(t *testing.T, p Paste) {
 	if len(p.Title) <= 0 {
 		t.Error("Paste Title is empty.")
 	}
-	if len(p.Content) <= 0 {
-		t.Error("Paste Content is empty.")
+	if *p.ModifiedOn <= 0 {
+		t.Error("ModifiedOn time is unset.")
 	}
 }
 
@@ -62,16 +62,16 @@ func TestCreateAndDeletePaste(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	title := "test" + RunUID
+	unlistedTitle := "unlistedtest" + RunUID
 
-	paste := NewPaste(title, "example paste content", 0)
+	unlistedPaste := NewPaste(unlistedTitle, "example paste content", false)
 
-	err = c.CreatePaste(testOwnedDomain, *paste)
+	err = c.CreatePaste(testOwnedDomain, *unlistedPaste)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	u, err := c.GetPaste(testOwnedDomain, title)
+	u, err := c.GetPaste(testOwnedDomain, unlistedTitle)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
@@ -79,11 +79,42 @@ func TestCreateAndDeletePaste(t *testing.T) {
 	if u != nil {
 		t.Log(u.String())
 		validatePaste(t, *u)
+		if u.Listed != false {
+			t.Error("Unlisted paste should have Listed value 'false'.")
+		}
 	} else {
-		t.Error("GetPaste returned 'nil' when retrieving paste.")
+		t.Error("GetPaste returned 'nil' when retrieving unlisted paste.")
 	}
 
-	err = c.DeletePaste(testOwnedDomain, title)
+	err = c.DeletePaste(testOwnedDomain, unlistedTitle)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+	sleep()
+	listedTitle := "listedtest" + RunUID
+	listedPaste := NewPaste(listedTitle, "example paste content", true)
+
+	err = c.CreatePaste(testOwnedDomain, *listedPaste)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	l, err := c.GetPaste(testOwnedDomain, listedTitle)
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	if l != nil {
+		t.Log(l.String())
+		validatePaste(t, *l)
+		if l.Listed != true {
+			t.Error("Listed paste should have Listed value 'true'.")
+		}
+	} else {
+		t.Error("GetPaste returned 'nil' when retrieving listed paste.")
+	}
+
+	err = c.DeletePaste(testOwnedDomain, listedTitle)
 	if err != nil {
 		t.Errorf(err.Error())
 	}

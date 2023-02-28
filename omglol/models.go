@@ -148,7 +148,8 @@ type dnsChangeResponse struct {
 type Paste struct {
 	Title      string `json:"title"`
 	Content    string `json:"content"`
-	ModifiedOn int64  `json:"modified_on"`
+	ModifiedOn *int64 `json:"modified_on"`
+	Listed     bool   `json:"listed"`
 }
 
 type PersistentURL struct {
