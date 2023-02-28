@@ -145,6 +145,12 @@ type dnsChangeResponse struct {
 	} `json:"response"`
 }
 
+type Paste struct {
+	Title      string `json:"title"`
+	Content    string `json:"content"`
+	ModifiedOn int64  `json:"modified_on"`
+}
+
 type PersistentURL struct {
 	Name    string `json:"name"`
 	URL     string `json:"url"`
