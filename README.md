@@ -57,5 +57,9 @@ This project is a work-in-progress, see the following table for supported featur
 ||Retrieve|GET|✔️|
 ||Create|POST|✔️|
 ||Delete|DELETE|✔️|
+|Paste|List|GET|✔️|
+||Retrieve|GET|✔️|
+||Create|POST|✔️|
+||Delete|DELETE|✔️|
 
 >**Note** Features marked with a * are additional to what the API provides
