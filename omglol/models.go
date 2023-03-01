@@ -145,6 +145,17 @@ type dnsChangeResponse struct {
 	} `json:"response"`
 }
 
+type emailResponse struct {
+	Request  request `json:"request"`
+	Response struct {
+		Message           string   `json:"message"`
+		DestinationString string   `json:"destination_string"`
+		DestinationArray  []string `json:"destination_array"`
+		Address           string   `json:"address"`
+		EmailAddress      string   `json:"email_address"`
+	} `json:"response"`
+}
+
 type Paste struct {
 	Title      string `json:"title"`
 	Content    string `json:"content"`
