@@ -142,7 +142,12 @@ func (c *Client) ListPastes(address string) (*[]Paste, error) {
 		} `json:"request"`
 		Response struct {
 			Message  string  `json:"message"`
-			Pastebin []Paste `json:"pastebin"`
+			Pastebin []struct {
+				Title      string `json:"title"`
+				Content    string `json:"content"`
+				ModifiedOn int64  `json:"modified_on"`
+				Listed     *int64 `json:"listed"`
+			} `json:"pastebin"`
 		} `json:"response"`
 	}
 
@@ -153,18 +158,15 @@ func (c *Client) ListPastes(address string) (*[]Paste, error) {
 	}
 
 	for _, paste := range r.Response.Pastebin {
-		var x Paste
 
-		x.Title = paste.Title
-		x.Content = paste.Content
-		x.ModifiedOn = paste.ModifiedOn
-		if !paste.Listed {
-			x.Listed = false
+		var listed bool
+		if paste.Listed != nil {
+			listed = true
 		} else {
-			x.Listed = true
+			listed = false
 		}
 
-		p = append(p, x)
+		p = append(p, *NewPaste(paste.Title, paste.Content, listed, paste.ModifiedOn))
 	}
 
 	return &p, nil
