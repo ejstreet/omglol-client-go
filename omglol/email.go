@@ -9,7 +9,7 @@ import (
 )
 
 // Get email forwarding address(es) for a domain. See https://api.omg.lol/#token-get-email-retrieve-forwarding-addresses
-func (c *Client) GetEmail(domain string) ([]string, error) {
+func (c *Client) GetEmails(domain string) ([]string, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/address/%s/email", c.HostURL, domain), nil)
 	if err != nil {
 		return nil, err
@@ -30,7 +30,7 @@ func (c *Client) GetEmail(domain string) ([]string, error) {
 }
 
 // Set email forwarding address(es) for a domain. See https://api.omg.lol/#token-post-email-set-forwarding-addresses
-func (c *Client) SetEmail(domain string, destination []string) error {
+func (c *Client) SetEmails(domain string, destination []string) error {
 	jsonData := fmt.Sprintf(`{"destination": "%s"}`, strings.Join(destination, ", "))
 	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/address/%s/email", c.HostURL, domain), bytes.NewBuffer([]byte(jsonData)))
 	if err != nil {
