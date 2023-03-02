@@ -53,6 +53,8 @@ This project is a work-in-progress, see the following table for supported featur
 ||Create|POST|✔️|
 ||Update|PATCH|✔️|
 ||Delete|DELETE|✔️|
+|Email|Retrieve|GET|✔️|
+||Set|POST|✔️|
 |PURL|List|GET|✔️|
 ||Retrieve|GET|✔️|
 ||Create|POST|✔️|

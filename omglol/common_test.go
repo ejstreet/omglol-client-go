@@ -86,3 +86,23 @@ func randStringBytes(n int) string {
     }
     return string(b)
 }
+
+func listsHaveSameElements(t *testing.T, list1 []string, list2 []string) bool {
+    if len(list1) == 0 && len(list2) == 0 {
+		t.Log("Both lists are length 0")
+        return true
+    }
+    
+    map2 := make(map[string]bool)
+    for _, str := range list2 {
+        map2[str] = true
+    }
+
+    for _, str := range list1 { 
+        if _, ok := map2[str]; !ok {
+            return false
+        }
+    }
+    
+    return true
+}
