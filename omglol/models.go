@@ -169,3 +169,18 @@ type PersistentURL struct {
 	Counter *int64 `json:"counter"`
 	Listed  bool   `json:"listed"`
 }
+
+type Web struct {
+	Message      string `json:"message"`
+	Content      string `json:"content"`
+	ContentBytes []byte `json:"omitempty"`
+	Type         string `json:"type"`
+	Theme        string `json:"theme"`
+	CSS          string `json:"css"`
+	Head         string `json:"head"`
+	Verified     bool   `json:"verified"`
+	PFP          string `json:"pfp"`
+	Metadata     string `json:"metadata"`
+	Branding     string `json:"branding"`
+	Modified     string `json:"modified"`
+}
