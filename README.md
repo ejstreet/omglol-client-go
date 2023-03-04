@@ -68,6 +68,9 @@ This project is a work-in-progress, see the following table for supported featur
 ||Delete|DELETE|✔️|
 |Email|Retrieve|GET|✔️|
 ||Set|POST|✔️|
+|Now|Retrieve|GET|✔️|
+||Garden|GET|✔️|
+||Update|POST|✔️|
 |PURL|List|GET|✔️|
 ||Retrieve|GET|✔️|
 ||Create|POST|✔️|
