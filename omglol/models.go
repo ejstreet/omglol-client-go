@@ -156,6 +156,24 @@ type emailResponse struct {
 	} `json:"response"`
 }
 
+type Now struct {
+	Content      string `json:"content"`
+	ContentBytes []byte `json:"omitempty"`
+	Updated      int64  `json:"updated"`
+	Listed       int    `json:"listed"`
+}
+
+type NowGardenEntry struct {
+	Address string `json:"address"`
+	URL     string `json:"url"`
+	Updated struct {
+		UnixEpochTime int64  `json:"unix_epoch_time"`
+		Iso8601Time   string `json:"iso_8601_time"`
+		Rfc2822Time   string `json:"rfc_2822_time"`
+		RelativeTime  string `json:"relative_time"`
+	} `json:"updated"`
+}
+
 type Paste struct {
 	Title      string `json:"title"`
 	Content    string `json:"content"`
