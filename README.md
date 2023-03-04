@@ -63,5 +63,6 @@ This project is a work-in-progress, see the following table for supported featur
 ||Retrieve|GET|✔️|
 ||Create|POST|✔️|
 ||Delete|DELETE|✔️|
+|Service|Info|GET|✔️|
 
 >**Note** Features marked with a * are additional to what the API provides
