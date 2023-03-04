@@ -81,5 +81,6 @@ This project is a work-in-progress, see the following table for supported featur
 ||Delete|DELETE|✔️|
 |Web|Retrieve|GET|✔️|
 ||Update|POST|✔️|
+|Service|Info|GET|✔️|
 
 >**Note** Features marked with a * are additional to what the API provides

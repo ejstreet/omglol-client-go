@@ -188,6 +188,13 @@ type PersistentURL struct {
 	Listed  bool   `json:"listed"`
 }
 
+type ServiceInfo struct {
+	Message   string `json:"message"`
+	Members   int64  `json:"members"`
+	Addresses int64  `json:"addresses"`
+	Profiles  int64  `json:"profiles"`
+}
+
 type Web struct {
 	Message      string `json:"message"`
 	Content      string `json:"content"`
