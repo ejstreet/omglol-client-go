@@ -22,6 +22,7 @@ func TestGetPaste(t *testing.T) {
 
 	p, err := c.GetPaste(testOwnedDomain, "testget")
 	if err != nil {
+		t.Logf("This test will fail if a paste named 'testget' does not exist.")
 		t.Errorf(err.Error())
 	}
 

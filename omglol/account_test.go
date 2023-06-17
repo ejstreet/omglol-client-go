@@ -127,8 +127,8 @@ func TestGetActiveSessions(t *testing.T) {
 	if s != nil {
 		t.Logf("Active Sessions: %+v", *s)
 		for _, x := range *s {
-			if len(x.SessionID) != 32 {
-				t.Errorf("Session ID %s is not expected length of 32, got length %d", x.SessionID, len(x.SessionID))
+			if len(x.SessionID) != 10 {
+				t.Errorf("Session ID %s is not expected length of 10, got length %d", x.SessionID, len(x.SessionID))
 			}
 			if len(x.UserAgent) <= 0 {
 				t.Errorf("user_agent is empty")

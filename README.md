@@ -31,6 +31,19 @@ import (
  ```
  See test files for further examples.
 
+### Tests
+To run tests, first export the following variables:
+```bash
+export OMGLOL_API_KEY=<your_api_key>
+export OMGLOL_USER_EMAIL=<your_email>
+export OMGLOL_USERNAME=<your_name>
+export OMGLOL_TEST_OWNED_DOMAIN=<your_domain>
+```
+Then run from the root of the git repo:
+```bash
+go test ./... -v
+```
+
 ## Supported Features
 This project is a work-in-progress, see the following table for supported features:
 

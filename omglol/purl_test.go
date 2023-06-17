@@ -26,6 +26,7 @@ func TestGetPersistentURL(t *testing.T) {
 
 	p, err := c.GetPersistentURL(testOwnedDomain, "testget")
 	if err != nil {
+		t.Logf("This test will fail if a purl named 'testget' does not exist.")
 		t.Errorf(err.Error())
 	}
 
@@ -61,7 +62,7 @@ func TestListPersistentURLs(t *testing.T) {
 
 }
 
-func TestCreateAndDeletePersistentURL(t *testing.T) {
+func TestCreateGetAndDeletePersistentURL(t *testing.T) {
 	sleep()
 	c, err := NewClient(testEmail, testKey, testHostURL)
 

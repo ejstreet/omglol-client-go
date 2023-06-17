@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Local test function to check validity
 func validateRecord(t *testing.T, r DNSRecord) {
 	if r.ID <= 0 {
 		t.Errorf("Record ID is invalid.")
@@ -94,6 +95,7 @@ func TestFilterDNSRecords(t *testing.T) {
 		t.Logf(d1.String())
 		validateRecord(t, *d1)
 	} else {
+		t.Logf("This test will fail if a TXT record named 'testget' with TTL 300 does not exist.")
 		t.Errorf("FilterDNSRecord returned nil.")
 	}
 
@@ -105,6 +107,10 @@ func TestFilterDNSRecords(t *testing.T) {
 	}
 
 	d2, err := c.FilterDNSRecord(testOwnedDomain, criteria2)
+	if err != nil {
+		t.Logf("This test will fail if a MX record named 'mail' with priority 20 does not exist.")
+		t.Errorf(err.Error())
+	}
 
 	if d2 != nil {
 		t.Logf(d2.String())
